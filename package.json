@@ -1,0 +1,35 @@
+{
+  "name": "hundir-la-flota-online",
+  "version": "1.0.0",
+  "description": "Juego web multijugador online en tiempo real de Hundir la Flota para servidor Apache y Node.js",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node test/test-game.js",
+    "pm2:start": "pm2 start ecosystem.config.js --env production",
+    "pm2:stop": "pm2 stop hundir-la-flota",
+    "pm2:restart": "pm2 restart hundir-la-flota",
+    "pm2:logs": "pm2 logs hundir-la-flota"
+  },
+  "keywords": [
+    "battleship",
+    "hundir-la-flota",
+    "multiplayer",
+    "socketio",
+    "apache",
+    "nodejs",
+    "realtime"
+  ],
+  "author": "Antigravity",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "socket.io": "^4.8.1"
+  }
+}

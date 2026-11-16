@@ -1,0 +1,28 @@
+name: Deploy Hundir la Flota
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar dependencias
+        run: npm install --omit=dev
+
+      - name: Desplegar archivos en el servidor
+        run: |
+          mkdir -p /var/www/hundir-la-flota
+          # Sincronizar archivos al directorio de producción preservando .env y base de datos
+          rsync -av --exclude='.git' --exclude='.env' --exclude='data' ./ /var/www/hundir-la-flota/
+          chown -R www-data:www-data /var/www/hundir-la-flota
+
+      - name: Reiniciar servicio PM2
+        run: |
+          pm2 restart hundir-la-flota || pm2 start /var/www/hundir-la-flota/ecosystem.config.js --env production
+          pm2 save

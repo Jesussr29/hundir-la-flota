@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Hundir la Flota Online - Multijugador</title>
+  <meta name="description" content="Juego clásico de Hundir la Flota multijugador online en tiempo real.">
+  <meta name="theme-color" content="#0f1117">
+
+  <!-- Fuente Minimalista: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Barra de Navegación Minimalista -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">⚓</span>
+      <span class="brand-title">Hundir la Flota</span>
+    </div>
+    <div class="nav-actions">
+      <div id="connection-status-pill" class="status-pill offline">
+        <span class="status-dot"></span>
+        <span class="status-text">Conectando...</span>
+      </div>
+      <button id="btn-sound-toggle" class="icon-btn" title="Activar/Silenciar sonido" aria-label="Sonido">🔊</button>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal -->
+  <main class="app-container">
+
+    <!-- 1. PANTALLA PRINCIPAL / MENÚ -->
+    <section id="view-menu" class="view-section active">
+      <div class="card menu-card">
+        <div class="menu-header">
+          <h1 class="menu-title">Hundir la Flota</h1>
+          <p class="menu-subtitle">Partidas online 1 contra 1 en tiempo real</p>
+        </div>
+
+        <div class="menu-form">
+          <div class="input-group">
+            <label for="input-player-name">Tu nombre o apodo</label>
+            <input type="text" id="input-player-name" class="minimal-input" placeholder="Ej: Comandante" maxlength="18">
+          </div>
+
+          <button id="btn-create-room" class="btn btn-primary">
+            Crear sala privada
+          </button>
+
+          <button id="btn-join-modal" class="btn btn-secondary">
+            Unirse con código
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. PANTALLA DE SALA DE ESPERA (LOBBY) -->
+    <section id="view-lobby" class="view-section">
+      <div class="card lobby-card">
+        <div class="menu-header">
+          <h2 class="menu-title" style="font-size: 1.5rem;">Sala de espera</h2>
+          <p class="menu-subtitle">Comparte el código o el enlace con tu rival</p>
+        </div>
+
+        <div class="lobby-code-box">
+          <span class="code-label">Código de sala:</span>
+          <div id="lobby-room-code" class="code-display">CÓDIGO</div>
+        </div>
+
+        <div class="action-row">
+          <button id="btn-copy-code" class="btn btn-secondary">Copiar código</button>
+          <button id="btn-copy-link" class="btn btn-secondary">Copiar enlace</button>
+        </div>
+
+        <button id="btn-share-whatsapp" class="btn btn-whatsapp" style="margin-top: 10px;">
+          Invitar por WhatsApp
+        </button>
+
+        <div class="lobby-players-list">
+          <div class="player-row">
+            <span class="player-label">Jugador 1:</span>
+            <span id="lobby-p1-status" class="player-name">Esperando...</span>
+          </div>
+          <div class="player-row">
+            <span class="player-label">Jugador 2:</span>
+            <span id="lobby-p2-status" class="player-name status-waiting">Esperando rival...</span>
+          </div>
+        </div>
+
+        <button id="btn-leave-lobby" class="btn btn-danger">
+          Abandonar sala
+        </button>
+      </div>
+    </section>
+
+    <!-- 3. PANTALLA DE COLOCACIÓN DE BARCOS -->
+    <section id="view-placement" class="view-section">
+      <div class="placement-layout">
+        <!-- Panel lateral: Barcos y acciones -->
+        <div class="placement-dock card">
+          <div class="dock-header">
+            <h3>Tus barcos</h3>
+            <span class="dock-count">5 unidades</span>
+          </div>
+          <p id="placement-status-text" class="placement-help">
+            Selecciona un barco y pulsa en la cuadrícula, o usa "Aleatorio".
+          </p>
+
+          <div id="ship-dock" class="ship-dock-list"></div>
+
+          <div class="placement-actions">
+            <button id="btn-rotate-ship" class="btn btn-secondary">
+              Girar orientación (Horizontal ↔)
+            </button>
+            <div class="btn-row">
+              <button id="btn-random-placement" class="btn btn-secondary">
+                🎲 Aleatorio
+              </button>
+              <button id="btn-clear-placement" class="btn btn-ghost">
+                Limpiar
+              </button>
+            </div>
+            <button id="btn-ready-fight" class="btn btn-success" disabled>
+              ¡Listo para jugar!
+            </button>
+          </div>
+        </div>
+
+        <!-- Tablero de colocación -->
+        <div class="placement-grid-wrap card">
+          <div class="grid-card-title">Posiciona tus barcos</div>
+          <div id="placement-grid" class="battleship-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. PANTALLA DE BATALLA (AMBOS TABLEROS VISIBLES SIN SCROLL) -->
+    <section id="view-battle" class="view-section">
+      <div class="battle-screen">
+        <!-- Banner de turno minimalista -->
+        <div id="battle-turn-banner" class="turn-banner opponent-turn">
+          ⏳ Conectando...
+        </div>
+
+        <!-- Contenedor con los dos tableros en la misma pantalla -->
+        <div class="battle-arena">
+          <!-- Tablero 1: Radar Rival (Donde disparas) -->
+          <div id="section-enemy-grid" class="board-card">
+            <div class="board-header">
+              <span class="board-title">Radar Rival</span>
+              <span class="board-badge badge-enemy">Zona de ataque</span>
+            </div>
+            <div id="enemy-grid" class="battleship-grid"></div>
+            <div id="enemy-fleet-tracker" class="fleet-tracker"></div>
+          </div>
+
+          <!-- Tablero 2: Mi Flota (Tus barcos) -->
+          <div id="section-player-grid" class="board-card">
+            <div class="board-header">
+              <span class="board-title">Mi Flota</span>
+              <span class="board-badge badge-ally">Defensa</span>
+            </div>
+            <div id="player-grid" class="battleship-grid"></div>
+            <div id="player-fleet-tracker" class="fleet-tracker"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. PANTALLA DE FIN DE PARTIDA -->
+    <section id="view-gameover" class="view-section">
+      <div class="card gameover-card">
+        <h2 id="gameover-title" class="title-victory">¡Victoria!</h2>
+        <p id="gameover-subtitle" class="menu-subtitle">Has hundido todos los barcos del rival.</p>
+
+        <div id="gameover-stats" class="gameover-stats"></div>
+
+        <div class="action-column">
+          <button id="btn-request-rematch" class="btn btn-primary">
+            Jugar otra partida
+          </button>
+          <button id="btn-back-to-menu" class="btn btn-secondary">
+            Volver al menú
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Botón flotante de Chat en la esquina inferior derecha -->
+  <button id="btn-toggle-chat" class="chat-fab" title="Abrir chat" aria-label="Abrir chat">
+    <span class="chat-fab-icon">💬</span>
+    <span class="chat-fab-text">Chat</span>
+    <span id="chat-unread-badge" class="chat-unread-badge hidden">0</span>
+  </button>
+
+  <!-- Modal / Ventana flotante de Chat en la esquina -->
+  <div id="chat-floating-modal" class="chat-modal-window hidden">
+    <div class="chat-modal-header">
+      <span class="chat-modal-title">Chat de la sala</span>
+      <button id="btn-close-chat" class="chat-modal-close" aria-label="Cerrar chat">✕</button>
+    </div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <div class="chat-input-row">
+      <input type="text" id="input-chat-message" placeholder="Escribe un mensaje..." maxlength="120">
+      <button id="btn-send-chat" class="btn btn-primary btn-chat-send">Enviar</button>
+    </div>
+  </div>
+
+  <!-- Modal para Unirse con Código -->
+  <div id="modal-join" class="modal-overlay hidden">
+    <div class="modal-dialog card">
+      <h3 class="modal-title">Unirse a partida</h3>
+      <p class="modal-subtitle">Introduce el código facilitado por tu rival</p>
+
+      <div class="input-group" style="margin-top: 14px;">
+        <label for="input-join-code">Código de sala:</label>
+        <input type="text" id="input-join-code" class="minimal-input code-input" placeholder="EJ: ALFA-482" maxlength="15">
+      </div>
+
+      <div class="action-row" style="margin-top: 18px;">
+        <button id="btn-cancel-join" class="btn btn-ghost">Cancelar</button>
+        <button id="btn-confirm-join" class="btn btn-primary">Entrar a la sala</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenedor de Alertas Toast Flotantes -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="socket.io/socket.io.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/board-ui.js"></script>
+  <script src="js/socket-client.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

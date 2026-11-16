@@ -1,0 +1,25 @@
+[Unit]
+Description=Servidor Node.js - Hundir la Flota Online Multijugador
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/hundir-la-flota
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+Environment=PORT=3005
+Environment=HOST=127.0.0.1
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=hundir-la-flota
+
+# Límites de seguridad del proceso
+LimitNOFILE=65535
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

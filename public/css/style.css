@@ -1,0 +1,1325 @@
+/* ====================================================================
+   HUNDIR LA FLOTA - DISEÑO NAVAL MODERNO, DINÁMICO Y AMPLIO
+   ==================================================================== */
+
+:root {
+  /* Paleta Oceánica Viva (Deep Ocean & Tactical Navy) */
+  --bg-deep: #070e1b;
+  --bg-ocean: #0c1a30;
+  --bg-card: #11223e;
+  --bg-card-hover: #162b4d;
+  --bg-grid: #091528;
+
+  /* Bordes y Divisiones */
+  --border-card: #1f375e;
+  --border-cell: #172d4e;
+  --border-hover: #38bdf8;
+
+  /* Colores Vivos Tácticos */
+  --blue-ocean: #0284c7;
+  --cyan-vivid: #38bdf8;
+  --emerald-turn: #10b981;
+  --amber-turn: #f59e0b;
+  --red-hit: #ef4444;
+  --red-sunk: #b91c1c;
+  --orange-fire: #f97316;
+
+  /* Textos */
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-dim: #64748b;
+
+  /* Tipografía */
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Tamaño del Tablero Ampliado (Más grande y visible) */
+  --cell-size: clamp(34px, 4.3vh, 46px);
+  --cell-gap: 3px;
+}
+
+/* Reset Global */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-main);
+  background: radial-gradient(circle at 50% 15%, #0f2444 0%, #091629 55%, #040913 100%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ====================================================================
+   BARRA SUPERIOR (NAVBAR)
+   ==================================================================== */
+.navbar {
+  height: 54px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  background: rgba(12, 26, 48, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-card);
+  z-index: 50;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  font-size: 1.4rem;
+  color: var(--cyan-vivid);
+}
+
+.brand-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  background: linear-gradient(90deg, #ffffff, var(--cyan-vivid));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgba(17, 34, 62, 0.8);
+  border: 1px solid var(--border-card);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.status-pill.online {
+  color: #34d399;
+}
+.status-pill.online .status-dot {
+  background-color: #34d399;
+  box-shadow: 0 0 8px #34d399;
+}
+
+.status-pill.offline {
+  color: #f87171;
+}
+.status-pill.offline .status-dot {
+  background-color: #f87171;
+}
+
+.icon-btn {
+  background: rgba(17, 34, 62, 0.8);
+  border: 1px solid var(--border-card);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--cyan-vivid);
+  transform: translateY(-1px);
+}
+
+/* ====================================================================
+   CONTENEDOR DE VISTAS
+   ==================================================================== */
+.app-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.view-section {
+  display: none;
+  width: 100%;
+}
+
+.view-section.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tarjeta General */
+.card {
+  background: linear-gradient(145deg, #12223e 0%, #0d1a30 100%);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.menu-card, .lobby-card, .gameover-card {
+  width: 100%;
+  max-width: 460px;
+}
+
+.menu-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.menu-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.menu-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.menu-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Inputs */
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cyan-vivid);
+  margin-bottom: 8px;
+}
+
+.minimal-input {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #081324;
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.minimal-input:focus {
+  border-color: var(--cyan-vivid);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+  background-color: #0b1a32;
+}
+
+.minimal-input.code-input {
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: 3px;
+  color: var(--cyan-vivid);
+}
+
+/* ====================================================================
+   BOTONES
+   ==================================================================== */
+.btn {
+  width: 100%;
+  padding: 13px 20px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+}
+
+.btn-secondary {
+  background: #152644;
+  color: #fff;
+  border-color: var(--border-card);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #1c335a;
+  border-color: var(--cyan-vivid);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+}
+
+.btn-success:hover:not(:disabled) {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+}
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.4);
+  margin-top: 10px;
+}
+
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: var(--border-card);
+}
+
+.btn-ghost:hover {
+  color: #fff;
+  border-color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-whatsapp {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+}
+
+.btn-whatsapp:hover {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.action-row {
+  display: flex;
+  gap: 12px;
+}
+
+.action-row .btn {
+  flex: 1;
+}
+
+/* ====================================================================
+   PANTALLA DE SALA DE ESPERA (LOBBY)
+   ==================================================================== */
+.lobby-code-box {
+  background: #081324;
+  border: 1px dashed var(--cyan-vivid);
+  border-radius: 10px;
+  padding: 18px;
+  text-align: center;
+  margin: 18px 0;
+  box-shadow: inset 0 0 15px rgba(2, 132, 199, 0.15);
+}
+
+.code-label {
+  font-size: 0.8rem;
+  color: var(--cyan-vivid);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.code-display {
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #fff;
+  margin: 6px 0;
+  user-select: all;
+  text-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+}
+
+.lobby-players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.player-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #09172c;
+  border: 1px solid var(--border-card);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+}
+
+.player-label {
+  color: var(--text-secondary);
+}
+
+.player-name {
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ====================================================================
+   PANTALLA DE COLOCACIÓN DE BARCOS
+   ==================================================================== */
+.placement-layout {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.placement-dock {
+  width: 340px;
+  flex-shrink: 0;
+}
+
+.dock-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-card);
+}
+
+.dock-header h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.dock-count {
+  font-size: 0.8rem;
+  color: var(--cyan-vivid);
+  font-weight: 700;
+}
+
+.placement-help {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.ship-dock-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.ship-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #09172c;
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ship-pill:hover {
+  background: #132440;
+  border-color: var(--cyan-vivid);
+  transform: translateX(3px);
+}
+
+.ship-pill.selected {
+  border-color: var(--cyan-vivid);
+  background: rgba(56, 189, 248, 0.15);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+}
+
+.ship-pill.placed {
+  border-color: rgba(16, 185, 129, 0.6);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.ship-pill-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ship-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.ship-pips-bar {
+  display: flex;
+  gap: 4px;
+}
+
+.dock-pip {
+  width: 14px;
+  height: 6px;
+  border-radius: 2px;
+  background: #334e7a;
+}
+
+.ship-pill.selected .dock-pip {
+  background: var(--cyan-vivid);
+  box-shadow: 0 0 6px var(--cyan-vivid);
+}
+
+.ship-pill.placed .dock-pip {
+  background: #34d399;
+}
+
+.ship-status {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.ship-pill.placed .ship-status {
+  color: #34d399;
+}
+
+.placement-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-row .btn {
+  flex: 1;
+}
+
+.placement-grid-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.grid-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--cyan-vivid);
+}
+
+/* ====================================================================
+   PANTALLA DE BATALLA (AMPLIA, COLORIDA Y SIN SCROLL)
+   ==================================================================== */
+.battle-screen {
+  width: 100%;
+  max-width: 1240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Banner de Turno Dinámico y Llamativo */
+.turn-banner {
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+}
+
+.turn-banner.my-turn {
+  background: linear-gradient(90deg, #065f46 0%, #059669 50%, #10b981 100%);
+  color: #ffffff;
+  border: 1px solid #34d399;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+  animation: myTurnGlow 2s infinite alternate;
+}
+
+@keyframes myTurnGlow {
+  0% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
+  100% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.65); }
+}
+
+.turn-banner.opponent-turn {
+  background: linear-gradient(90deg, #78350f 0%, #b45309 50%, #d97706 100%);
+  color: #ffffff;
+  border: 1px solid #fbbf24;
+}
+
+/* Arena Central: Ambos Tableros Lado a Lado */
+.battle-arena {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 28px;
+}
+
+/* Tarjeta del Tablero */
+.board-card {
+  flex: 1;
+  max-width: 530px;
+  background: linear-gradient(160deg, #10213d 0%, #0b172c 100%);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.board-card:hover {
+  border-color: #2b4f87;
+}
+
+.board-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.board-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.board-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-enemy {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid #ef4444;
+}
+
+.badge-ally {
+  background: rgba(56, 189, 248, 0.2);
+  color: var(--cyan-vivid);
+  border: 1px solid var(--cyan-vivid);
+}
+
+/* ====================================================================
+   CUADRÍCULA 10x10 AMPLIADA Y COLORIDA
+   ==================================================================== */
+.battleship-grid {
+  display: grid;
+  grid-template-columns: 24px repeat(10, var(--cell-size));
+  grid-template-rows: 24px repeat(10, var(--cell-size));
+  gap: var(--cell-gap);
+  background-color: var(--bg-grid);
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #1a3660;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7);
+  user-select: none;
+}
+
+.grid-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #7dd3fc;
+}
+
+.grid-header.header-active {
+  color: #ffffff;
+  text-shadow: 0 0 6px var(--cyan-vivid);
+}
+
+/* Celda Normal */
+.grid-cell {
+  background-color: #0d1e38;
+  border: 1px solid var(--border-cell);
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+/* Hover de Mira Telescópica en Radar Enemigo */
+.radar-targetable:hover {
+  background-color: #173868;
+  border-color: var(--cyan-vivid);
+  box-shadow: inset 0 0 10px rgba(56, 189, 248, 0.5);
+  transform: scale(1.05);
+  z-index: 5;
+}
+
+.radar-targetable:hover::after {
+  content: '🎯';
+  font-size: 1.1rem;
+  pointer-events: none;
+  animation: targetPulse 0.5s ease infinite alternate;
+}
+
+@keyframes targetPulse {
+  from { transform: scale(0.9); }
+  to { transform: scale(1.15); }
+}
+
+/* Previsualización en colocación */
+.grid-cell.preview-valid {
+  background-color: rgba(16, 185, 129, 0.65) !important;
+  border-color: #34d399 !important;
+}
+
+.grid-cell.preview-invalid {
+  background-color: rgba(239, 68, 68, 0.65) !important;
+  border-color: #f87171 !important;
+}
+
+/* ====================================================================
+   BARCOS ALIADOS EN CUADRÍCULA (METÁLICO AZUL MARINO)
+   ==================================================================== */
+.grid-cell.ship-cell {
+  background: linear-gradient(135deg, #254b7c 0%, #173255 100%);
+  border-color: #38bdf8;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3), 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.ship-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #38bdf8;
+  opacity: 0.8;
+}
+
+.grid-cell.ship-bow {
+  border-top-left-radius: 6px;
+}
+
+.grid-cell.ship-stern {
+  border-bottom-right-radius: 6px;
+}
+
+.grid-cell.ship-sunk {
+  background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%) !important;
+  border-color: #ef4444 !important;
+  box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.7) !important;
+}
+
+.grid-cell.ship-sunk-revealed {
+  background: linear-gradient(135deg, #6b1424 0%, #36070f 100%) !important;
+  border: 1px solid #ef4444 !important;
+  box-shadow: inset 0 0 10px rgba(239, 68, 68, 0.6) !important;
+}
+
+/* ====================================================================
+   ANIMACIONES DE DISPARO: AGUA Y TOCADO
+   ==================================================================== */
+
+/* Disparo al AGUA */
+.grid-cell.cell-water {
+  background-color: #082142;
+  border-color: #0284c7;
+}
+
+.water-splash-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.water-splash-core {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+.water-splash-ring {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(56, 189, 248, 0.7);
+  animation: waterRipple 2s infinite cubic-bezier(0, 0.2, 0.8, 1);
+}
+
+@keyframes waterRipple {
+  0% { transform: scale(0.4); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+/* Animación de entrada de Agua */
+.anim-water-splash {
+  animation: splashImpact 0.8s ease-out;
+}
+
+@keyframes splashImpact {
+  0% { transform: scale(0.6); background-color: #38bdf8; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Disparo TOCADO (Impacto de Fuego) */
+.grid-cell.cell-hit {
+  background: radial-gradient(circle, #7f1d1d 0%, #2b0606 100%);
+  border-color: #ef4444;
+}
+
+.hit-flame-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hit-flame-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  z-index: 2;
+  animation: flameBounce 1.5s infinite alternate;
+}
+
+@keyframes flameBounce {
+  0% { transform: scale(0.9) rotate(-3deg); }
+  100% { transform: scale(1.15) rotate(3deg); }
+}
+
+.hit-flame-burst {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.8) 0%, rgba(239, 68, 68, 0.4) 60%, transparent 80%);
+  animation: burstPulse 1.2s infinite alternate;
+}
+
+@keyframes burstPulse {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(1.3); opacity: 1; }
+}
+
+/* Animación de entrada de Explosión */
+.anim-hit-explosion {
+  animation: explosionImpact 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 10;
+}
+
+@keyframes explosionImpact {
+  0% { transform: scale(0.3); background-color: #f97316; }
+  50% { transform: scale(1.3); background-color: #ef4444; }
+  100% { transform: scale(1); }
+}
+
+/* Sacudida de tablero al recibir impacto */
+.anim-board-shake {
+  animation: boardShake 0.4s ease-in-out;
+}
+
+@keyframes boardShake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-4px, 3px); }
+  40% { transform: translate(4px, -3px); }
+  60% { transform: translate(-3px, -2px); }
+  80% { transform: translate(2px, 2px); }
+}
+
+/* ====================================================================
+   RASTREADOR DE FLOTA CON MÁS COLOR
+   ==================================================================== */
+.fleet-tracker {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.tracker-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #09172c;
+  border: 1px solid var(--border-card);
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.tracker-ship-icon {
+  font-size: 0.95rem;
+}
+
+.tracker-name {
+  color: #cbd5e1;
+}
+
+.tracker-pips {
+  display: flex;
+  gap: 3px;
+}
+
+.tracker-pip {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+}
+
+.tracker-pip.active {
+  background-color: #38bdf8;
+  box-shadow: 0 0 5px rgba(56, 189, 248, 0.8);
+}
+
+.tracker-pip.sunk {
+  background-color: #ef4444;
+  box-shadow: 0 0 5px rgba(239, 68, 68, 0.8);
+}
+
+.tracker-item.sunk {
+  opacity: 0.55;
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.1);
+  text-decoration: line-through;
+}
+
+/* ====================================================================
+   BOTÓN FLOTANTE DE CHAT Y MODAL
+   ==================================================================== */
+.chat-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border: 1px solid #38bdf8;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 25px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
+  z-index: 60;
+  transition: all 0.2s ease;
+}
+
+.chat-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(2, 132, 199, 0.65);
+}
+
+.chat-fab.hidden {
+  display: none;
+}
+
+.chat-unread-badge {
+  background-color: #ef4444;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+}
+
+.chat-unread-badge.hidden {
+  display: none;
+}
+
+/* Ventana de Chat en Esquina */
+.chat-modal-window {
+  position: fixed;
+  bottom: 74px;
+  right: 20px;
+  width: 340px;
+  height: 420px;
+  background: #0f1f38;
+  border: 1px solid #2b4f87;
+  border-radius: 12px;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  z-index: 70;
+  overflow: hidden;
+  animation: chatOpen 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes chatOpen {
+  from { opacity: 0; transform: translateY(15px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.chat-modal-window.hidden {
+  display: none;
+}
+
+.chat-modal-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-card);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #142848;
+}
+
+.chat-modal-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.chat-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.chat-modal-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.88rem;
+}
+
+.chat-msg {
+  padding: 7px 11px;
+  border-radius: 8px;
+  background: #081324;
+  border: 1px solid var(--border-card);
+  word-break: break-word;
+}
+
+.chat-msg.system {
+  background: rgba(56, 189, 248, 0.1);
+  border-left: 3px solid var(--cyan-vivid);
+  font-size: 0.82rem;
+  color: #cbd5e1;
+}
+
+.chat-msg.mine {
+  background: rgba(2, 132, 199, 0.25);
+  border-right: 3px solid var(--cyan-vivid);
+  align-self: flex-end;
+}
+
+.chat-msg .time {
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  margin-right: 6px;
+}
+
+.sys-badge {
+  font-weight: 800;
+  color: var(--cyan-vivid);
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--border-card);
+  background-color: #142848;
+}
+
+.chat-input-row input {
+  flex: 1;
+  background-color: #081324;
+  border: 1px solid var(--border-card);
+  border-radius: 6px;
+  padding: 9px 12px;
+  color: #fff;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.chat-input-row input:focus {
+  border-color: var(--cyan-vivid);
+}
+
+.btn-chat-send {
+  width: auto;
+  padding: 8px 14px;
+}
+
+/* ====================================================================
+   PANTALLA DE FIN DE PARTIDA
+   ==================================================================== */
+.gameover-card {
+  text-align: center;
+}
+
+.title-victory {
+  color: #34d399;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.title-defeat {
+  color: #f87171;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.gameover-stats {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.stat-box {
+  background: #09172c;
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  padding: 12px 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-box span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.stat-box strong {
+  font-size: 1.4rem;
+  color: #fff;
+  margin-top: 2px;
+}
+
+.action-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ====================================================================
+   MODALES
+   ==================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 8, 18, 0.85);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal-dialog {
+  width: 100%;
+  max-width: 440px;
+}
+
+.modal-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: #fff;
+}
+
+.modal-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* ====================================================================
+   TOASTS
+   ==================================================================== */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+  max-width: 400px;
+}
+
+.toast {
+  background: #11223e;
+  border: 1px solid var(--border-card);
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  font-size: 0.92rem;
+  font-weight: 600;
+  animation: toastIn 0.25s ease;
+}
+
+.toast.fade-out {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: all 0.3s ease;
+}
+
+.toast-success { border-left: 4px solid #10b981; }
+.toast-error { border-left: 4px solid #ef4444; }
+.toast-info { border-left: 4px solid #38bdf8; }
+.toast-water { border-left: 4px solid #0284c7; }
+.toast-hit { border-left: 4px solid #f97316; }
+.toast-sunk { border-left: 4px solid #ef4444; background: #2a0910; }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ====================================================================
+   ADAPTACIÓN RESPONSIVE
+   ==================================================================== */
+@media (max-width: 860px) {
+  :root {
+    --cell-size: 26px;
+    --cell-gap: 2px;
+  }
+
+  .placement-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .placement-dock {
+    width: 100%;
+  }
+
+  .battle-arena {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .board-card {
+    width: 100%;
+    padding: 10px 12px;
+  }
+
+  .chat-modal-window {
+    width: calc(100vw - 32px);
+    right: 16px;
+    bottom: 74px;
+  }
+}
