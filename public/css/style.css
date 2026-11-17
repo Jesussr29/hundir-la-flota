@@ -138,6 +138,14 @@ body {
   height: 18px;
 }
 
+.brand-emblem-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  display: block;
+}
+
 .brand-text {
   display: flex;
   flex-direction: column;
