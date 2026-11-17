@@ -176,6 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       id: 'carrier',
       name: 'Portaaviones Titan',
+      shortName: 'Portaaviones',
       cells: 5,
       icon: '🚢',
       class: 'Clase Apex Supercarrier',
@@ -189,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       id: 'battleship',
       name: 'Acorazado Dreadnought',
+      shortName: 'Acorazado',
       cells: 4,
       icon: '🛳️',
       class: 'Clase Leviatán Pesado',
@@ -202,6 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       id: 'cruiser1',
       name: 'Crucero Lanzamisiles Alfa',
+      shortName: 'Crucero 1',
       cells: 3,
       icon: '🛥️',
       class: 'Clase Aegis Táctica',
@@ -215,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       id: 'cruiser2',
       name: 'Crucero Bravo',
+      shortName: 'Crucero 2',
       cells: 3,
       icon: '🛥️',
       class: 'Clase Aegis Táctica',
@@ -228,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       id: 'destroyer',
       name: 'Destructor Corbeta Flash',
+      shortName: 'Destructor',
       cells: 2,
       icon: '🚤',
       class: 'Clase Corsario Sigiloso',
@@ -488,7 +493,10 @@ document.addEventListener('DOMContentLoaded', () => {
     HANGAR_SHIPS.forEach(ship => {
       const tab = document.createElement('button');
       tab.className = `hangar-tab-btn ${ship.id === currentHangarShipId ? 'active' : ''}`;
-      tab.innerHTML = `<span>${ship.icon}</span> <span>${ship.name.split(' ')[0]}</span>`;
+      tab.innerHTML = `
+        <span class="hangar-tab-icon">${ship.icon}</span>
+        <span class="hangar-tab-name">${ship.shortName || ship.name.split(' ')[0]}</span>
+      `;
       tab.addEventListener('click', () => {
         window.soundFx.playInspect();
         currentHangarShipId = ship.id;

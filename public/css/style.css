@@ -1364,57 +1364,6 @@ button:disabled {
   box-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
 }
 
-/* Ticker de Telemetría Táctica Superior */
-.tactical-ticker {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 24px;
-  background: rgba(6, 14, 27, 0.88);
-  border-bottom: 1px solid rgba(31, 55, 94, 0.65);
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.76rem;
-  color: var(--text-dim);
-  letter-spacing: 0.4px;
-  z-index: 40;
-}
-.ticker-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.ticker-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 8px #10b981;
-  animation: blinkPulse 2.2s infinite;
-  flex-shrink: 0;
-}
-@keyframes blinkPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.85); }
-}
-.ticker-label {
-  color: #f59e0b;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-.ticker-separator {
-  color: var(--border-card);
-}
-.ticker-right {
-  flex-shrink: 0;
-}
-.ticker-coord {
-  color: var(--cyan-vivid);
-  font-weight: 700;
-}
-
 /* Dashboard Principal en 3 Columnas */
 .menu-dashboard {
   width: 100%;
@@ -1569,6 +1518,57 @@ button:disabled {
   font-size: 0.75rem;
   color: var(--text-secondary);
   font-weight: 600;
+}
+
+/* Botón de Condecoraciones Mejorado */
+.btn-medals-card {
+  width: 100%;
+  margin-top: 14px;
+  padding: 11px 14px;
+  background: rgba(8, 19, 36, 0.85);
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  color: #fff;
+  box-sizing: border-box;
+}
+.btn-medals-card:hover {
+  background: rgba(21, 38, 68, 0.95);
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+  transform: translateY(-1px);
+}
+.medals-btn-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.medals-btn-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.medals-btn-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+.medals-btn-pill {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  color: #fbbf24;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 /* Panel Central: Operaciones y Modos */
@@ -1732,36 +1732,56 @@ button:disabled {
 }
 
 .hangar-tabs {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: 5px;
-  overflow-x: auto;
-  padding-bottom: 8px;
   margin-bottom: 12px;
+  overflow: hidden;
+  scrollbar-width: none;
+}
+.hangar-tabs::-webkit-scrollbar {
+  display: none;
 }
 .hangar-tab-btn {
-  background: rgba(8, 19, 36, 0.8);
+  background: rgba(8, 19, 36, 0.85);
   border: 1px solid var(--border-card);
   color: var(--text-secondary);
   border-radius: 6px;
-  padding: 6px 9px;
-  font-size: 0.78rem;
+  padding: 8px 2px;
+  font-size: 0.72rem;
   font-weight: 700;
   cursor: pointer;
-  white-space: nowrap;
   transition: all 0.2s ease;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  gap: 3px;
+  text-align: center;
+  min-width: 0;
 }
 .hangar-tab-btn:hover {
   color: #fff;
   border-color: var(--cyan-vivid);
+  background: rgba(14, 32, 60, 0.9);
 }
 .hangar-tab-btn.active {
   background: rgba(2, 132, 199, 0.35);
   border-color: var(--cyan-vivid);
   color: #fff;
   box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+.hangar-tab-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+.hangar-tab-name {
+  font-size: 0.65rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .ship-display-box {
@@ -2119,9 +2139,6 @@ button:disabled {
 }
 
 @media (max-width: 768px) {
-  .tactical-ticker {
-    display: none;
-  }
   .menu-dashboard {
     grid-template-columns: 1fr;
   }

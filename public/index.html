@@ -38,19 +38,6 @@
     </div>
   </header>
 
-  <!-- Cinta de Telemetría Táctica Superior -->
-  <aside class="tactical-ticker" aria-label="Telemetría táctica">
-    <div class="ticker-left">
-      <span class="ticker-dot"></span>
-      <span class="ticker-label">DEFCON 2</span>
-      <span class="ticker-separator">|</span>
-      <span class="ticker-text">SISTEMA NAVAL ACTIVO · BARRIDO SONAR 360° · SECTOR OCEÁNICO 07-B</span>
-    </div>
-    <div class="ticker-right">
-      <span class="ticker-coord">LAT 36°15'N · LON 05°21'W</span>
-    </div>
-  </aside>
-
   <!-- Contenedor Principal -->
   <main class="app-container">
 
@@ -113,8 +100,14 @@
             </div>
           </div>
 
-          <button id="btn-open-medals" class="btn btn-secondary btn-sm" style="margin-top: 14px;">
-            🏅 Condecoraciones (<span id="medals-count-unlocked">0</span>/8)
+          <button id="btn-open-medals" class="btn-medals-card" title="Ver condecoraciones navales">
+            <div class="medals-btn-left">
+              <span class="medals-btn-icon">🏅</span>
+              <span class="medals-btn-title">Condecoraciones</span>
+            </div>
+            <span class="medals-btn-pill">
+              <span id="medals-count-unlocked">0</span> / 8
+            </span>
           </button>
         </div>
 
