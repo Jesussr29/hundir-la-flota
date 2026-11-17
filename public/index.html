@@ -16,13 +16,20 @@
 </head>
 <body>
 
-  <!-- Barra de Navegación Minimalista -->
+  <!-- Fondo animado interactivo: Radar Sonar Táctico -->
+  <canvas id="radar-canvas-bg" class="radar-bg"></canvas>
+
+  <!-- Barra de Navegación -->
   <header class="navbar">
     <div class="nav-brand">
       <span class="brand-icon">⚓</span>
       <span class="brand-title">Hundir la Flota</span>
+      <span class="brand-tag">TACTICAL NAVY</span>
     </div>
     <div class="nav-actions">
+      <button id="btn-sonar-ping" class="icon-btn sonar-btn" title="Emitir pulso acústico de sonar" aria-label="Sonar">
+        📡 Sonar
+      </button>
       <div id="connection-status-pill" class="status-pill offline">
         <span class="status-dot"></span>
         <span class="status-text">Conectando...</span>
@@ -31,31 +38,180 @@
     </div>
   </header>
 
+  <!-- Cinta de Telemetría Táctica Superior -->
+  <aside class="tactical-ticker" aria-label="Telemetría táctica">
+    <div class="ticker-left">
+      <span class="ticker-dot"></span>
+      <span class="ticker-label">DEFCON 2</span>
+      <span class="ticker-separator">|</span>
+      <span class="ticker-text">SISTEMA NAVAL ACTIVO · BARRIDO SONAR 360° · SECTOR OCEÁNICO 07-B</span>
+    </div>
+    <div class="ticker-right">
+      <span class="ticker-coord">LAT 36°15'N · LON 05°21'W</span>
+    </div>
+  </aside>
+
   <!-- Contenedor Principal -->
   <main class="app-container">
 
-    <!-- 1. PANTALLA PRINCIPAL / MENÚ -->
+    <!-- 1. PANTALLA PRINCIPAL / MENÚ DASHBOARD -->
     <section id="view-menu" class="view-section active">
-      <div class="card menu-card">
-        <div class="menu-header">
-          <h1 class="menu-title">Hundir la Flota</h1>
-          <p class="menu-subtitle">Partidas online 1 contra 1 en tiempo real</p>
-        </div>
+      <div class="menu-dashboard">
 
-        <div class="menu-form">
-          <div class="input-group">
-            <label for="input-player-name">Tu nombre o apodo</label>
-            <input type="text" id="input-player-name" class="minimal-input" placeholder="Ej: Comandante" maxlength="18">
+        <!-- PANEL IZQUIERDO: DOSSIER DEL COMANDANTE -->
+        <div class="card commander-card">
+          <div class="card-classified-header">
+            <span class="stamp-classified">ALTO MANDO NAVAL</span>
+            <span class="id-code">DOC #842-NV</span>
           </div>
 
-          <button id="btn-create-room" class="btn btn-primary">
-            Crear sala privada
-          </button>
+          <div class="commander-profile">
+            <div class="avatar-container">
+              <button id="btn-select-avatar" class="commander-avatar" title="Cambiar insignia naval" aria-label="Cambiar insignia">
+                <span id="commander-avatar-icon">⚓</span>
+                <span class="avatar-edit-hint">Cambiar</span>
+              </button>
+            </div>
+            
+            <div class="commander-info">
+              <div class="input-group">
+                <label for="input-player-name">Nombre de Guerra</label>
+                <input type="text" id="input-player-name" class="minimal-input" placeholder="Ej: Almirante" maxlength="18">
+              </div>
+            </div>
+          </div>
 
-          <button id="btn-join-modal" class="btn btn-secondary">
-            Unirse con código
+          <!-- Rango militar -->
+          <div class="rank-badge-box">
+            <div class="rank-header">
+              <span class="rank-label">RANGO ACTUAL</span>
+              <span id="commander-rank-title" class="rank-title">Cadete Naval</span>
+            </div>
+            <div class="rank-progress-bar">
+              <div id="commander-rank-fill" class="rank-progress-fill" style="width: 10%;"></div>
+            </div>
+            <div id="commander-rank-exp" class="rank-exp-text">1 victoria para ascender</div>
+          </div>
+
+          <!-- Estadísticas de Carrera -->
+          <div class="stats-grid">
+            <div class="stat-cell">
+              <span class="stat-num" id="stat-wins">0</span>
+              <span class="stat-desc">🏆 Victorias</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-num" id="stat-matches">0</span>
+              <span class="stat-desc">⚔️ Batallas</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-num" id="stat-accuracy">0%</span>
+              <span class="stat-desc">🎯 Precisión</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-num" id="stat-sunk">0</span>
+              <span class="stat-desc">💥 Hundidos</span>
+            </div>
+          </div>
+
+          <button id="btn-open-medals" class="btn btn-secondary btn-sm" style="margin-top: 14px;">
+            🏅 Condecoraciones (<span id="medals-count-unlocked">0</span>/8)
           </button>
         </div>
+
+        <!-- PANEL CENTRAL: CENTRO DE OPERACIONES Y MODOS DE JUEGO -->
+        <div class="card battle-ops-card">
+          <div class="menu-header">
+            <h1 class="menu-title">Centro de Operaciones</h1>
+            <p class="menu-subtitle">Elige tu modo de combate naval en tiempo real</p>
+          </div>
+
+          <!-- Selector de Modo de Juego -->
+          <div class="ops-modes-container">
+            
+            <!-- Modo 1: Multijugador Online -->
+            <div class="mode-box mode-multiplayer">
+              <div class="mode-box-header">
+                <div class="mode-icon">🌐</div>
+                <div class="mode-text">
+                  <h3>Multijugador Online (1 vs 1)</h3>
+                  <p>Enfréntate a un amigo en tiempo real compartiendo enlace o código</p>
+                </div>
+              </div>
+              <div class="mode-actions-row">
+                <button id="btn-create-room" class="btn btn-primary">
+                  <span>⚓</span> Crear sala privada
+                </button>
+                <button id="btn-join-modal" class="btn btn-secondary">
+                  <span>🔑</span> Unirse con código
+                </button>
+              </div>
+            </div>
+
+            <div class="ops-divider">
+              <span>O BIEN</span>
+            </div>
+
+            <!-- Modo 2: Misión Solo vs IA Táctica -->
+            <div class="mode-box mode-bot">
+              <div class="mode-badge-ai">¡COMBATE INMEDIATO!</div>
+              <div class="mode-box-header">
+                <div class="mode-icon">🤖</div>
+                <div class="mode-text">
+                  <h3>Misión Solo: vs IA Naval</h3>
+                  <p>Entrena al instante contra algoritmos de búsqueda balística</p>
+                </div>
+              </div>
+
+              <!-- Selector de dificultad -->
+              <div class="diff-selector-row">
+                <button class="btn-diff" data-diff="easy">
+                  <span class="diff-dot easy"></span>
+                  Recluta
+                </button>
+                <button class="btn-diff active" data-diff="tactical">
+                  <span class="diff-dot tactical"></span>
+                  Táctico
+                </button>
+                <button class="btn-diff" data-diff="hard">
+                  <span class="diff-dot hard"></span>
+                  Almirante Némesis
+                </button>
+              </div>
+              <p id="diff-explanation" class="diff-explanation-text">
+                🔵 <strong>Táctico:</strong> Utiliza el algoritmo de caza en cruz tras cada impacto y maniobras perimetrales.
+              </p>
+
+              <button id="btn-play-bot" class="btn btn-success btn-play-ai">
+                <span>⚔️</span> ¡Iniciar Batalla contra la IA!
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PANEL DERECHO: HANGAR NAVAL & GUÍA TÁCTICA -->
+        <div class="card hangar-card">
+          <div class="hangar-header">
+            <div class="hangar-title-row">
+              <h3>🚢 Hangar de la Flota</h3>
+              <span class="dock-count">5 Buques</span>
+            </div>
+            <p class="hangar-subtitle">Inspecciona las especificaciones de combate</p>
+          </div>
+
+          <!-- Selector de barco en el hangar -->
+          <div id="hangar-ships-tabs" class="hangar-tabs"></div>
+
+          <!-- Ficha técnica del barco seleccionado -->
+          <div id="hangar-ship-display" class="ship-display-box">
+            <!-- Renderizado dinámicamente con JS -->
+          </div>
+
+          <button id="btn-open-tactical-guide" class="btn btn-secondary btn-sm" style="margin-top: 14px;">
+            📖 Manual de Estrategia Naval
+          </button>
+        </div>
+
       </div>
     </section>
 
@@ -66,6 +222,15 @@
           <h2 class="menu-title" style="font-size: 1.5rem;">Sala de espera</h2>
           <p class="menu-subtitle">Comparte el código o el enlace con tu rival</p>
         </div>
+
+        <!-- Radar animado de búsqueda de señal en el Lobby -->
+        <div class="lobby-radar-animation">
+          <div class="radar-pulse-ring r1"></div>
+          <div class="radar-pulse-ring r2"></div>
+          <div class="radar-pulse-ring r3"></div>
+          <div class="radar-pulse-center">📡</div>
+        </div>
+        <p class="lobby-scanner-status">Buscando señal de radio del segundo comandante...</p>
 
         <div class="lobby-code-box">
           <span class="code-label">Código de sala:</span>
@@ -90,6 +255,12 @@
             <span class="player-label">Jugador 2:</span>
             <span id="lobby-p2-status" class="player-name status-waiting">Esperando rival...</span>
           </div>
+        </div>
+
+        <!-- Caja de consejo táctico rotativo -->
+        <div class="lobby-tip-card">
+          <span class="tip-icon">💡</span>
+          <span id="lobby-tip-text" class="tip-text">Consejo: Si disparas en patrón de ajedrez (paridad), localizarás barcos en la mitad de turnos.</span>
         </div>
 
         <button id="btn-leave-lobby" class="btn btn-danger">
@@ -227,6 +398,91 @@
       <div class="action-row" style="margin-top: 18px;">
         <button id="btn-cancel-join" class="btn btn-ghost">Cancelar</button>
         <button id="btn-confirm-join" class="btn btn-primary">Entrar a la sala</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Condecoraciones y Medallas -->
+  <div id="modal-medals" class="modal-overlay hidden">
+    <div class="modal-dialog card modal-wide">
+      <div class="modal-header-row">
+        <div>
+          <h3 class="modal-title">🏅 Condecoraciones Navales</h3>
+          <p class="modal-subtitle">Méritos militares y logros de combate en servicio</p>
+        </div>
+        <button id="btn-close-medals" class="chat-modal-close" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div id="medals-grid-container" class="medals-grid"></div>
+
+      <div style="margin-top: 20px; text-align: center;">
+        <button id="btn-done-medals" class="btn btn-secondary" style="max-width: 200px; margin: 0 auto;">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Selector de Insignia de Comandante -->
+  <div id="modal-avatars" class="modal-overlay hidden">
+    <div class="modal-dialog card modal-medium">
+      <div class="modal-header-row">
+        <div>
+          <h3 class="modal-title">⚓ Insignia de Comandante</h3>
+          <p class="modal-subtitle">Elige el emblema táctico para tu flota</p>
+        </div>
+        <button id="btn-close-avatars" class="chat-modal-close" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div id="avatars-selection-grid" class="avatars-grid"></div>
+    </div>
+  </div>
+
+  <!-- Modal de Manual Táctico y Estrategias -->
+  <div id="modal-guide" class="modal-overlay hidden">
+    <div class="modal-dialog card modal-wide">
+      <div class="modal-header-row">
+        <div>
+          <h3 class="modal-title">📖 Manual de Estrategia Naval</h3>
+          <p class="modal-subtitle">Tácticas balísticas comprobadas para dominar el océano</p>
+        </div>
+        <button id="btn-close-guide" class="chat-modal-close" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="tactics-guide-content">
+        <div class="tactic-card">
+          <div class="tactic-badge">TÁCTICA 1</div>
+          <h4>♟️ La Regla de la Paridad (Tablero de Ajedrez)</h4>
+          <p>
+            El barco más pequeño de la flota (el Destructor) mide <strong>2 casillas</strong>. Si disparas únicamente en casillas alternas donde <em>(Fila + Columna)</em> es par, es matemáticamente imposible que un barco enemigo se esconda sin ser descubierto. ¡Reduces un 50% el número de tiros necesarios para localizar la flota!
+          </p>
+          <div class="tactic-visual parity-demo">
+            <span class="cell-demo hit">A1</span>
+            <span class="cell-demo">A2</span>
+            <span class="cell-demo hit">A3</span>
+            <span class="cell-demo">B1</span>
+            <span class="cell-demo hit">B2</span>
+            <span class="cell-demo">B3</span>
+          </div>
+        </div>
+
+        <div class="tactic-card">
+          <div class="tactic-badge">TÁCTICA 2</div>
+          <h4>🎯 El Algoritmo de Caza en Cruz</h4>
+          <p>
+            En cuanto logres un <strong>¡TOCADO!</strong>, no dispares al azar. Prueba sistemáticamente las 4 posiciones adyacentes: <strong>Norte, Sur, Este y Oeste</strong>. Al encontrar el segundo impacto habrás descubierto la orientación (horizontal o vertical); continúa esa línea hasta oír <strong>¡HUNDIDO!</strong>
+          </p>
+        </div>
+
+        <div class="tactic-card">
+          <div class="tactic-badge">TÁCTICA 3</div>
+          <h4>🛡️ Camuflaje Perimétrico y Dispersión</h4>
+          <p>
+            Muchos capitanes concentran su fuego en el centro del tablero. Colocar al menos 2 barcos en los <strong>bordes exteriores (Filas 1 y 10, Columnas A y J)</strong> aumentará drásticamente la supervivencia de tu flota. Deja siempre al menos una casilla vacía entre buques para no dar pistas.
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; text-align: center;">
+        <button id="btn-done-guide" class="btn btn-primary" style="max-width: 220px; margin: 0 auto;">¡A la batalla!</button>
       </div>
     </div>
   </div>

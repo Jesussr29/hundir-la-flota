@@ -1323,3 +1323,815 @@ button:disabled {
     bottom: 74px;
   }
 }
+
+/* ====================================================================
+   NUEVOS COMPONENTES: DASHBOARD NAVAL, RADAR Y HANGAR
+   ==================================================================== */
+
+/* Fondo Radar Sonar Dinámico */
+.radar-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+/* Badge táctico en el navbar */
+.brand-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--cyan-vivid);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  margin-left: 6px;
+  text-transform: uppercase;
+}
+
+.sonar-btn {
+  background: rgba(2, 132, 199, 0.22);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: var(--cyan-vivid);
+}
+.sonar-btn:hover {
+  background: rgba(2, 132, 199, 0.45);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
+}
+
+/* Ticker de Telemetría Táctica Superior */
+.tactical-ticker {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 24px;
+  background: rgba(6, 14, 27, 0.88);
+  border-bottom: 1px solid rgba(31, 55, 94, 0.65);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  letter-spacing: 0.4px;
+  z-index: 40;
+}
+.ticker-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ticker-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: blinkPulse 2.2s infinite;
+  flex-shrink: 0;
+}
+@keyframes blinkPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+.ticker-label {
+  color: #f59e0b;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.ticker-separator {
+  color: var(--border-card);
+}
+.ticker-right {
+  flex-shrink: 0;
+}
+.ticker-coord {
+  color: var(--cyan-vivid);
+  font-weight: 700;
+}
+
+/* Dashboard Principal en 3 Columnas */
+.menu-dashboard {
+  width: 100%;
+  max-width: 1280px;
+  display: grid;
+  grid-template-columns: 290px minmax(360px, 1.25fr) 350px;
+  gap: 18px;
+  align-items: stretch;
+  margin: 10px auto;
+}
+
+/* Panel Izquierdo: Dossier del Comandante */
+.commander-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+.card-classified-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px dashed rgba(56, 189, 248, 0.25);
+  padding-bottom: 8px;
+}
+.stamp-classified {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #f59e0b;
+  letter-spacing: 1.5px;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.id-code {
+  font-family: monospace;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.commander-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.avatar-container {
+  position: relative;
+}
+.commander-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #193660 0%, #0d1e37 100%);
+  border: 2px solid var(--cyan-vivid);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+  font-size: 2.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.commander-avatar:hover {
+  transform: scale(1.05);
+  border-color: #fff;
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.6);
+}
+.avatar-edit-hint {
+  position: absolute;
+  bottom: -4px;
+  background: var(--blue-ocean);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+.commander-info {
+  width: 100%;
+}
+
+.rank-badge-box {
+  background: rgba(8, 19, 36, 0.7);
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+.rank-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.rank-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+.rank-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--cyan-vivid);
+}
+.rank-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #081324;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.rank-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue-ocean), var(--cyan-vivid));
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.rank-exp-text {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.stat-cell {
+  background: rgba(8, 19, 36, 0.6);
+  border: 1px solid var(--border-card);
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.stat-num {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+}
+.stat-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* Panel Central: Operaciones y Modos */
+.battle-ops-card {
+  display: flex;
+  flex-direction: column;
+}
+.ops-modes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.mode-box {
+  background: rgba(8, 19, 36, 0.75);
+  border: 1px solid var(--border-card);
+  border-radius: 10px;
+  padding: 18px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.mode-box:hover {
+  border-color: rgba(56, 189, 248, 0.45);
+  background: rgba(11, 24, 45, 0.85);
+}
+.mode-box-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.mode-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+.mode-text h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.mode-text p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+.mode-actions-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ops-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 4px 0;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.ops-divider::before, .ops-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(31, 55, 94, 0.7);
+}
+.ops-divider span {
+  padding: 0 12px;
+}
+
+.mode-badge-ai {
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+.diff-selector-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.3fr;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.btn-diff {
+  background: #0d1a30;
+  border: 1px solid var(--border-card);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  padding: 7px 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+.btn-diff:hover {
+  color: #fff;
+  border-color: var(--cyan-vivid);
+}
+.btn-diff.active {
+  background: rgba(2, 132, 199, 0.25);
+  border-color: var(--cyan-vivid);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+}
+.diff-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.diff-dot.easy { background: #10b981; }
+.diff-dot.tactical { background: #38bdf8; }
+.diff-dot.hard { background: #ef4444; }
+
+.diff-explanation-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.35;
+  min-height: 34px;
+}
+
+.btn-play-ai {
+  font-size: 1.05rem;
+  padding: 14px 20px;
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45);
+}
+
+/* Panel Derecho: Hangar Naval */
+.hangar-card {
+  display: flex;
+  flex-direction: column;
+}
+.hangar-header {
+  margin-bottom: 14px;
+}
+.hangar-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.hangar-title-row h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+}
+.hangar-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.hangar-tabs {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+.hangar-tab-btn {
+  background: rgba(8, 19, 36, 0.8);
+  border: 1px solid var(--border-card);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  padding: 6px 9px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.hangar-tab-btn:hover {
+  color: #fff;
+  border-color: var(--cyan-vivid);
+}
+.hangar-tab-btn.active {
+  background: rgba(2, 132, 199, 0.35);
+  border-color: var(--cyan-vivid);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.ship-display-box {
+  background: rgba(8, 19, 36, 0.75);
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  padding: 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ship-blueprint-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ship-class-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+}
+.ship-cells-badge {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--cyan-vivid);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+.ship-visual-render {
+  background: radial-gradient(circle, #0e2444 0%, #08152a 100%);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 8px;
+  padding: 18px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.ship-render-icon {
+  font-size: 2.8rem;
+  filter: drop-shadow(0 4px 12px rgba(56, 189, 248, 0.4));
+  margin-bottom: 6px;
+}
+.ship-render-segments {
+  display: flex;
+  gap: 4px;
+}
+.ship-segment-block {
+  width: 22px;
+  height: 12px;
+  background: rgba(56, 189, 248, 0.3);
+  border: 1px solid var(--cyan-vivid);
+  border-radius: 2px;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+}
+
+.ship-bars-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.spec-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.spec-bar-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+.spec-bar-track {
+  width: 100%;
+  height: 5px;
+  background: #081324;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.spec-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0284c7, #38bdf8);
+  border-radius: 2px;
+}
+.ship-lore-text {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+/* Radar animado en la Sala de Espera */
+.lobby-radar-animation {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 10px auto 14px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.radar-pulse-center {
+  font-size: 2.2rem;
+  z-index: 2;
+  filter: drop-shadow(0 0 10px var(--cyan-vivid));
+}
+.radar-pulse-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid var(--cyan-vivid);
+  opacity: 0;
+  animation: radarWave 2.8s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+.radar-pulse-ring.r1 { animation-delay: 0s; }
+.radar-pulse-ring.r2 { animation-delay: 0.9s; }
+.radar-pulse-ring.r3 { animation-delay: 1.8s; }
+
+@keyframes radarWave {
+  0% { transform: scale(0.2); opacity: 0.9; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+.lobby-scanner-status {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--cyan-vivid);
+  font-family: monospace;
+  margin-bottom: 14px;
+}
+
+.lobby-tip-card {
+  background: rgba(8, 19, 36, 0.7);
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
+.tip-icon {
+  font-size: 1.2rem;
+}
+.tip-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+/* Modales Personalizados Ampliados */
+.modal-wide {
+  max-width: 680px;
+  width: 95%;
+}
+.modal-medium {
+  max-width: 480px;
+  width: 95%;
+}
+.modal-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+/* Grid de Medallas / Condecoraciones */
+.medals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.medal-card-item {
+  background: rgba(8, 19, 36, 0.75);
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+.medal-card-item.unlocked {
+  border-color: rgba(245, 158, 11, 0.6);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(8, 19, 36, 0.8) 100%);
+}
+.medal-card-item.locked {
+  opacity: 0.55;
+  filter: grayscale(0.7);
+}
+.medal-icon-box {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #0d1e37;
+  border: 1px solid var(--border-card);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+.medal-card-item.unlocked .medal-icon-box {
+  border-color: #f59e0b;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+}
+.medal-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.medal-title-text {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #fff;
+}
+.medal-card-item.unlocked .medal-title-text {
+  color: #fbbf24;
+}
+.medal-desc-text {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+.medal-status-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+.status-badge-unlocked {
+  color: #10b981;
+}
+.status-badge-locked {
+  color: var(--text-dim);
+}
+
+/* Selector de Avatares */
+.avatars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.avatar-choice-btn {
+  background: rgba(8, 19, 36, 0.7);
+  border: 1px solid var(--border-card);
+  border-radius: 10px;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.avatar-choice-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--cyan-vivid);
+  background: rgba(14, 32, 60, 0.8);
+}
+.avatar-choice-btn.active {
+  border-color: var(--cyan-vivid);
+  background: rgba(2, 132, 199, 0.3);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+}
+.avatar-choice-icon {
+  font-size: 2.2rem;
+}
+.avatar-choice-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+}
+
+/* Contenido de la Guía Táctica */
+.tactics-guide-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.tactic-card {
+  background: rgba(8, 19, 36, 0.75);
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  padding: 16px;
+  position: relative;
+}
+.tactic-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--cyan-vivid);
+  margin-bottom: 6px;
+}
+.tactic-card h4 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.tactic-card p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+.tactic-visual.parity-demo {
+  display: grid;
+  grid-template-columns: repeat(3, 40px);
+  gap: 4px;
+  margin-top: 10px;
+}
+.cell-demo {
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: monospace;
+  background: #0d1e37;
+  color: var(--text-dim);
+  border: 1px solid var(--border-card);
+}
+.cell-demo.hit {
+  background: rgba(56, 189, 248, 0.25);
+  color: var(--cyan-vivid);
+  border-color: var(--cyan-vivid);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
+/* Adaptación responsive para el Dashboard del Menú */
+@media (max-width: 1080px) {
+  .menu-dashboard {
+    grid-template-columns: 280px 1fr;
+  }
+  .hangar-card {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .tactical-ticker {
+    display: none;
+  }
+  .menu-dashboard {
+    grid-template-columns: 1fr;
+  }
+  .hangar-card {
+    grid-column: span 1;
+  }
+  .mode-actions-row {
+    grid-template-columns: 1fr;
+  }
+  .diff-selector-row {
+    grid-template-columns: 1fr;
+  }
+}

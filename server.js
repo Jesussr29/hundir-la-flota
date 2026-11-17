@@ -109,10 +109,125 @@ function isRateLimited(socketId, maxPerSec = 10) {
   return entry.count > maxPerSec;
 }
 
+/**
+ * Inteligencia Artificial Naval: algoritmo de disparo táctico.
+ */
+function chooseBotShot(botPlayer, opponentBoard) {
+  const unshot = [];
+  const parityUnshot = [];
+  for (let r = 0; r < 10; r++) {
+    for (let c = 0; c < 10; c++) {
+      if (!opponentBoard.shots.has(`${r},${c}`)) {
+        unshot.push({ row: r, col: c });
+        if ((r + c) % 2 === 0) {
+          parityUnshot.push({ row: r, col: c });
+        }
+      }
+    }
+  }
+
+  if (unshot.length === 0) return null;
+
+  // 1. Modo Caza Activa (Hunt & Target tras un tocado)
+  if ((botPlayer.difficulty === 'tactical' || botPlayer.difficulty === 'hard') && botPlayer.huntQueue && botPlayer.huntQueue.length > 0) {
+    while (botPlayer.huntQueue.length > 0) {
+      const candidate = botPlayer.huntQueue.shift();
+      if (!opponentBoard.shots.has(`${candidate.row},${candidate.col}`)) {
+        return candidate;
+      }
+    }
+  }
+
+  // 2. Modo Exploración Táctica con Paridad Matemática (Hard)
+  if (botPlayer.difficulty === 'hard' && parityUnshot.length > 0) {
+    return parityUnshot[Math.floor(Math.random() * parityUnshot.length)];
+  }
+
+  // 3. Exploración estándar
+  return unshot[Math.floor(Math.random() * unshot.length)];
+}
+
+/**
+ * Ejecuta el turno del Bot tras una breve pausa táctica realista.
+ */
+function checkAndExecuteBotTurn(room) {
+  if (!room || room.status !== 'playing') return;
+  const currentPlayer = room.players[room.currentTurn];
+  if (!currentPlayer || !currentPlayer.isBot) return;
+
+  const opponent = room.players[1 - room.currentTurn];
+  if (!opponent) return;
+
+  const delay = Math.floor(Math.random() * 400) + 850;
+  setTimeout(() => {
+    if (room.status !== 'playing') return;
+    if (room.players[room.currentTurn] !== currentPlayer) return;
+
+    const target = chooseBotShot(currentPlayer, opponent.board);
+    if (!target) return;
+
+    try {
+      const shootReport = room.shoot(currentPlayer.id, target.row, target.col);
+
+      if (shootReport.shotResult.result === 'hit') {
+        const neighbors = [
+          { row: target.row - 1, col: target.col },
+          { row: target.row + 1, col: target.col },
+          { row: target.row, col: target.col - 1 },
+          { row: target.row, col: target.col + 1 }
+        ].filter(n => n.row >= 0 && n.row < 10 && n.col >= 0 && n.col < 10 && !opponent.board.shots.has(`${n.row},${n.col}`));
+
+        if (!currentPlayer.huntQueue) currentPlayer.huntQueue = [];
+        currentPlayer.huntQueue.push(...neighbors);
+
+        const botTaunts = [
+          '🎯 ¡Impacto confirmado en tu sector!',
+          '📡 Sensor de radar: blanco localizado.',
+          '🔥 Daños estructurales detectados en tu barco.',
+          'Ajustando coordenadas de artillería...'
+        ];
+        if (Math.random() < 0.45) {
+          const taunt = botTaunts[Math.floor(Math.random() * botTaunts.length)];
+          const msg = room.addChatMessage(currentPlayer.id, currentPlayer.name, taunt);
+          if (msg) io.to(room.code).emit('chat_received', msg);
+        }
+      } else if (shootReport.shotResult.result === 'sunk') {
+        currentPlayer.huntQueue = [];
+        const sunkMsg = `🚨 ¡He hundido tu ${shootReport.shotResult.ship.name}! Reorganizando radar balístico.`;
+        const msg = room.addChatMessage(currentPlayer.id, currentPlayer.name, sunkMsg);
+        if (msg) io.to(room.code).emit('chat_received', msg);
+      }
+
+      if (shootReport.isGameOver) {
+        roomManager.recordMatch(room);
+      }
+
+      syncRoom(room);
+
+      io.to(room.code).emit('shot_fired', {
+        row: target.row,
+        col: target.col,
+        result: shootReport.shotResult.result,
+        ship: shootReport.shotResult.ship || null,
+        shooterToken: currentPlayer.id,
+        turnSwitches: shootReport.turnSwitches,
+        isGameOver: shootReport.isGameOver
+      });
+
+      // Si acertó (tocado/hundido) y el juego continúa, el bot vuelve a disparar
+      if (!shootReport.isGameOver && !shootReport.turnSwitches) {
+        checkAndExecuteBotTurn(room);
+      }
+    } catch (err) {
+      console.error('[Bot Shoot Error]:', err);
+    }
+  }, delay);
+}
+
 // Lógica de eventos Socket.IO
 io.on('connection', (socket) => {
 
-  // 1. CREAR SALA
+  // 1. CREAR SALA MULTIJUGADOR
   socket.on('create_room', ({ playerName }) => {
     try {
       if (isRateLimited(socket.id)) return;
@@ -126,6 +241,49 @@ io.on('connection', (socket) => {
 
       const room = roomManager.createRoom(hostPlayer);
       socket.join(room.code);
+
+      socket.emit('room_created', {
+        roomCode: room.code,
+        playerToken
+      });
+
+      syncRoom(room);
+    } catch (err) {
+      socket.emit('action_error', { message: err.message });
+    }
+  });
+
+  // 1.1 CREAR SALA VS IA (MODO ENTRENAMIENTO / SOLO)
+  socket.on('create_bot_room', ({ playerName, difficulty }) => {
+    try {
+      if (isRateLimited(socket.id)) return;
+
+      const playerToken = generatePlayerToken();
+      const hostPlayer = {
+        id: playerToken,
+        socketId: socket.id,
+        name: (playerName && playerName.trim()) ? playerName.trim() : 'Comandante'
+      };
+
+      const room = roomManager.createRoom(hostPlayer);
+      socket.join(room.code);
+
+      const botToken = 'BOT-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+      const diff = difficulty || 'tactical';
+      const botNames = {
+        easy: 'Recluta Silicon (IA)',
+        tactical: 'Capitán Némesis (IA)',
+        hard: 'Almirante DeepTide (IA)'
+      };
+
+      const botPlayer = room.addPlayer(botToken, null, botNames[diff] || 'IA Táctica (Bot)');
+      botPlayer.isBot = true;
+      botPlayer.difficulty = diff;
+      botPlayer.huntQueue = [];
+
+      // Colocar barcos de la IA de forma reglamentaria aleatoria
+      botPlayer.board.placeShipsRandomly();
+      botPlayer.ready = true;
 
       socket.emit('room_created', {
         roomCode: room.code,
@@ -231,6 +389,11 @@ io.on('connection', (socket) => {
 
       room.submitFleet(playerToken, fleet);
       syncRoom(room);
+
+      // Si arrancó la batalla y es turno de la IA, programar su disparo
+      if (room.status === 'playing') {
+        checkAndExecuteBotTurn(room);
+      }
     } catch (err) {
       socket.emit('action_error', { message: err.message });
     }
@@ -265,6 +428,11 @@ io.on('connection', (socket) => {
         isGameOver: shootReport.isGameOver
       });
 
+      // Si la partida sigue y le toca al Bot, ejecutar su turno
+      if (!shootReport.isGameOver) {
+        checkAndExecuteBotTurn(room);
+      }
+
     } catch (err) {
       socket.emit('action_error', { message: err.message });
     }
@@ -298,6 +466,23 @@ io.on('connection', (socket) => {
       if (!room) return;
 
       room.requestRematch(playerToken);
+
+      // Si el rival es un Bot, acepta la revancha automáticamente
+      const botPlayer = room.players.find(p => p.isBot);
+      if (botPlayer) {
+        const Board = require('./src/game/Board');
+        botPlayer.board = new Board();
+        botPlayer.board.placeShipsRandomly();
+        botPlayer.ready = true;
+        botPlayer.huntQueue = [];
+        botPlayer.rematchRequested = true;
+        room.requestRematch(botPlayer.id);
+
+        if (room.status === 'playing') {
+          checkAndExecuteBotTurn(room);
+        }
+      }
+
       syncRoom(room);
     } catch (err) {
       socket.emit('action_error', { message: err.message });

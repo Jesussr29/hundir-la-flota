@@ -115,4 +115,17 @@ assert.throws(() => {
 const shootRes = room.shoot(shooterToken, 9, 9);
 assert.ok(['water', 'hit', 'sunk'].includes(shootRes.shotResult.result));
 
+// 6. Prueba de Integración: Modo Bot Naval IA
+console.log('  -> Prueba 6: Despliegue automático y disparo del Bot IA');
+const botRoom = roomManager.createRoom({ id: 'human-token', socketId: 'sock-h', name: 'Humano' });
+const bot = botRoom.addPlayer('bot-token', null, 'Capitán Némesis (IA)');
+bot.isBot = true;
+bot.board.placeShipsRandomly();
+bot.ready = true;
+assert.strictEqual(bot.board.isFleetReady(), true, 'El bot debe colocar su flota');
+
+// Enviar flota del humano
+botRoom.submitFleet('human-token', p1Ships);
+assert.strictEqual(botRoom.status, 'playing', 'Partida vs Bot debe iniciar automáticamente');
+
 console.log('✅ TODAS LAS PRUEBAS AUTOMÁTICAS PASARON EXITOSAMENTE CON CÓDIGO 0.');

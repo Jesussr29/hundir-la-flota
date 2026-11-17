@@ -94,6 +94,11 @@ class SocketClient {
     this.socket.emit('create_room', { playerName });
   }
 
+  createBotRoom(playerName, difficulty = 'tactical') {
+    this.connect();
+    this.socket.emit('create_bot_room', { playerName, difficulty });
+  }
+
   joinRoom(roomCode, playerName) {
     this.connect();
     // Enviar token previo si coincide la sala para reconectar como el mismo jugador

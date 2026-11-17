@@ -278,6 +278,64 @@ class SoundEffects {
       console.warn('Audio error:', e);
     }
   }
+
+  // Inspección táctica de buque / Hangar
+  playInspect() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(520, now);
+      osc.frequency.exponentialRampToValueAtTime(780, now + 0.12);
+
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.15);
+    } catch (e) {
+      console.warn('Audio error:', e);
+    }
+  }
+
+  // Desbloqueo de medalla / Condecoración naval
+  playMedal() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    try {
+      const notes = [440, 554, 659, 880];
+      notes.forEach((freq, i) => {
+        const startTime = this.ctx.currentTime + (i * 0.09);
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, startTime);
+
+        gain.gain.setValueAtTime(0.2, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(startTime);
+        osc.stop(startTime + 0.35);
+      });
+    } catch (e) {
+      console.warn('Audio error:', e);
+    }
+  }
 }
 
 window.soundFx = new SoundEffects();
