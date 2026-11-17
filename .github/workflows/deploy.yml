@@ -19,7 +19,7 @@ jobs:
         run: |
           mkdir -p /var/www/hundir-la-flota
           # Sincronizar archivos al directorio de producción preservando .env y base de datos
-          rsync -av --exclude='.git' --exclude='.env' --exclude='data' ./ /var/www/hundir-la-flota/
+          rsync -av --no-perms --no-owner --no-group --exclude='.git' --exclude='.env' --exclude='data' ./ /var/www/hundir-la-flota/
 
       - name: Reiniciar servicio PM2
         run: |
