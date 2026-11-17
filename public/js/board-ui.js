@@ -269,7 +269,7 @@ class BoardUI {
       });
     }
 
-    // Dibujar impactos y aguas recibidos con animaciones
+    // Dibujar impactos y aguas recibidos con animaciones tácticas
     if (boardData.shots) {
       boardData.shots.forEach(shot => {
         const cell = gridElement.querySelector(`.grid-cell[data-row="${shot.row}"][data-col="${shot.col}"]`);
@@ -278,18 +278,24 @@ class BoardUI {
             cell.classList.add('cell-water');
             cell.innerHTML = `
               <div class="water-splash-container">
-                <span class="water-splash-ring"></span>
+                <span class="water-splash-ring ring-1"></span>
+                <span class="water-splash-ring ring-2"></span>
                 <span class="water-splash-core"></span>
+                <span class="water-droplet d1"></span>
+                <span class="water-droplet d2"></span>
               </div>
             `;
           } else if (shot.status === 'hit') {
             cell.classList.add('cell-hit');
             cell.innerHTML = `
               <div class="hit-flame-container">
+                <span class="hit-shockwave"></span>
                 <span class="hit-flame-burst"></span>
+                <span class="hit-ember e1"></span>
+                <span class="hit-ember e2"></span>
                 <svg class="hit-marker-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="5" y1="5" x2="19" y2="19"></line>
+                  <line x1="19" y1="5" x2="5" y2="19"></line>
                   <circle cx="12" cy="12" r="2.5" fill="currentColor"></circle>
                 </svg>
               </div>
@@ -318,12 +324,17 @@ class BoardUI {
     // Pintar barcos ya hundidos revelados
     if (enemyBoardData.sunkShips) {
       enemyBoardData.sunkShips.forEach(ship => {
-        ship.coordinates.forEach(coord => {
-          const cell = gridElement.querySelector(`.grid-cell[data-row="${coord.row}"][data-col="${coord.col}"]`);
-          if (cell) {
-            cell.classList.add('ship-sunk-revealed');
-          }
-        });
+        if (ship.coordinates) {
+          ship.coordinates.forEach((coord, idx) => {
+            const cell = gridElement.querySelector(`.grid-cell[data-row="${coord.row}"][data-col="${coord.col}"]`);
+            if (cell) {
+              cell.classList.add('ship-sunk-revealed');
+              if (idx === 0) cell.classList.add('ship-bow');
+              if (idx === ship.coordinates.length - 1) cell.classList.add('ship-stern');
+              if (ship.orientation) cell.classList.add(`ship-${ship.orientation}`);
+            }
+          });
+        }
       });
     }
 
@@ -337,18 +348,24 @@ class BoardUI {
             cell.classList.add('cell-water');
             cell.innerHTML = `
               <div class="water-splash-container">
-                <span class="water-splash-ring"></span>
+                <span class="water-splash-ring ring-1"></span>
+                <span class="water-splash-ring ring-2"></span>
                 <span class="water-splash-core"></span>
+                <span class="water-droplet d1"></span>
+                <span class="water-droplet d2"></span>
               </div>
             `;
           } else if (shot.status === 'hit') {
             cell.classList.add('cell-hit');
             cell.innerHTML = `
               <div class="hit-flame-container">
+                <span class="hit-shockwave"></span>
                 <span class="hit-flame-burst"></span>
+                <span class="hit-ember e1"></span>
+                <span class="hit-ember e2"></span>
                 <svg class="hit-marker-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="5" y1="5" x2="19" y2="19"></line>
+                  <line x1="19" y1="5" x2="5" y2="19"></line>
                   <circle cx="12" cy="12" r="2.5" fill="currentColor"></circle>
                 </svg>
               </div>

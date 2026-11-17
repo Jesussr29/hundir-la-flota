@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function draw() {
       ctx.clearRect(0, 0, width, height);
 
-      // Cuadrícula cartográfica sutil con retículas
+      // Cuadrícula cartográfica de navegación marítima
       const gridSize = 64;
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.025)';
       ctx.lineWidth = 1;
@@ -402,8 +402,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.stroke();
       }
 
-      // Cruces técnicas milimétricas en intersecciones
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
+      // Cruces técnicas de coordenadas náuticas
+      ctx.strokeStyle = 'rgba(234, 88, 12, 0.12)';
       const crossSize = 3;
       for (let x = gridSize * 2; x < width; x += gridSize * 2) {
         for (let y = gridSize * 2; y < height; y += gridSize * 2) {
@@ -420,7 +420,74 @@ document.addEventListener('DOMContentLoaded', () => {
       const cy = height / 2;
       const maxRadius = Math.max(width, height) * 0.55;
 
-      // Círculos de rango balístico sutiles
+      // Curvas batimétricas náuticas (profundidad oceánica)
+      ctx.save();
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.035)';
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([4, 6]);
+
+      // Curva batimétrica 1 (100m isóbata)
+      ctx.beginPath();
+      ctx.moveTo(0, height * 0.28);
+      ctx.bezierCurveTo(width * 0.25, height * 0.22, width * 0.5, height * 0.38, width, height * 0.25);
+      ctx.stroke();
+
+      // Curva batimétrica 2 (200m isóbata)
+      ctx.beginPath();
+      ctx.moveTo(0, height * 0.55);
+      ctx.bezierCurveTo(width * 0.35, height * 0.65, width * 0.7, height * 0.48, width, height * 0.62);
+      ctx.stroke();
+
+      // Curva batimétrica 3 (500m fosa)
+      ctx.beginPath();
+      ctx.moveTo(0, height * 0.82);
+      ctx.bezierCurveTo(width * 0.4, height * 0.76, width * 0.65, height * 0.88, width, height * 0.8);
+      ctx.stroke();
+      ctx.restore();
+
+      // Rosa de los vientos náutica central (faint compass rose watermark)
+      ctx.save();
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.04)';
+      ctx.lineWidth = 1;
+      const roseSize = Math.min(width, height) * 0.22;
+      
+      // Anillos concéntricos de rosa náutica
+      ctx.beginPath();
+      ctx.arc(cx, cy, roseSize * 0.4, 0, Math.PI * 2);
+      ctx.arc(cx, cy, roseSize * 0.8, 0, Math.PI * 2);
+      ctx.arc(cx, cy, roseSize, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Puntas cardinales
+      const cardinals = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2];
+      cardinals.forEach(a => {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(a) * roseSize, cy + Math.sin(a) * roseSize);
+        ctx.stroke();
+      });
+
+      // Puntos cardinales intermedios
+      const intermediates = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
+      intermediates.forEach(a => {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(a) * (roseSize * 0.65), cy + Math.sin(a) * (roseSize * 0.65));
+        ctx.stroke();
+      });
+
+      // Letras de orientación náutica
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.12)';
+      ctx.font = '10px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('N', cx, cy - roseSize - 8);
+      ctx.fillText('S', cx, cy + roseSize + 8);
+      ctx.fillText('E', cx + roseSize + 10, cy);
+      ctx.fillText('W', cx - roseSize - 10, cy);
+      ctx.restore();
+
+      // Círculos de rango balístico
       ctx.strokeStyle = 'rgba(56, 189, 248, 0.04)';
       ctx.lineWidth = 1;
       const rings = 4;
@@ -431,19 +498,19 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.stroke();
       }
 
-      // Eje de navegación central tenue
+      // Eje de navegación central
       ctx.beginPath();
-      ctx.moveTo(cx - 40, cy);
-      ctx.lineTo(cx + 40, cy);
-      ctx.moveTo(cx, cy - 40);
-      ctx.lineTo(cx, cy + 40);
+      ctx.moveTo(cx - 30, cy);
+      ctx.lineTo(cx + 30, cy);
+      ctx.moveTo(cx, cy - 30);
+      ctx.lineTo(cx, cy + 30);
       ctx.stroke();
 
-      // Haz de barrido sutil
-      angle = (angle + 0.006) % (Math.PI * 2);
+      // Haz de barrido de sonar táctico
+      angle = (angle + 0.005) % (Math.PI * 2);
 
       const sweepGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxRadius);
-      sweepGradient.addColorStop(0, 'rgba(56, 189, 248, 0.06)');
+      sweepGradient.addColorStop(0, 'rgba(56, 189, 248, 0.05)');
       sweepGradient.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
 
       ctx.save();
@@ -455,7 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.fill();
 
       // Línea frontal nítida
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.18)';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.16)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(cx, cy);
@@ -1193,16 +1260,51 @@ document.addEventListener('DOMContentLoaded', () => {
       switchView('gameover');
 
       const isWinner = state.winnerId === state.me.id;
+      const gameoverEmblemWrap = document.getElementById('gameover-emblem-wrap');
+      if (gameoverEmblemWrap) {
+        if (isWinner) {
+          gameoverEmblemWrap.innerHTML = `
+            <div class="victory-crest-container">
+              <div class="victory-laurel-badge">
+                <svg class="victory-laurel-svg" viewBox="0 0 100 100" fill="none">
+                  <!-- Corona de Laureles Dorada Táctica -->
+                  <path d="M50 12 C30 18 20 35 22 56 C24 72 35 84 50 90 C65 84 76 72 78 56 C80 35 70 18 50 12 Z" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="4 2"/>
+                  <!-- Anclas Cruzadas Navales -->
+                  <line x1="34" y1="34" x2="66" y2="66" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+                  <line x1="66" y1="34" x2="34" y2="66" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+                  <circle cx="50" cy="50" r="14" fill="#0b1424" stroke="#f59e0b" stroke-width="2"/>
+                  <!-- Estrella de Gran Almirante -->
+                  <polygon points="50,42 52.5,47.5 58,48.5 54,52.5 55,58 50,55 45,58 46,52.5 42,48.5 47.5,47.5" fill="#f59e0b"/>
+                </svg>
+                <div class="victory-grade-stars">★★★★★</div>
+                <span class="victory-accolade">ORDEN DEL MÉRITO NAVAL</span>
+              </div>
+            </div>
+          `;
+        } else {
+          gameoverEmblemWrap.innerHTML = `
+            <div class="defeat-crest-container">
+              <svg class="defeat-shield-svg" viewBox="0 0 100 100" fill="none">
+                <path d="M50 14 L80 26 L80 58 C80 74 50 88 50 88 C50 88 20 74 20 58 L20 26 Z" fill="#111827" stroke="#dc2626" stroke-width="2.5"/>
+                <line x1="38" y1="38" x2="62" y2="62" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+                <line x1="62" y1="38" x2="38" y2="62" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+              <span class="defeat-accolade">CASCO CRÍTICO // UNIDADES PERDIDAS</span>
+            </div>
+          `;
+        }
+      }
+
       if (isWinner) {
         window.soundFx.playVictory();
-        gameoverTitle.textContent = '¡Victoria!';
-        gameoverTitle.className = 'title-victory';
-        gameoverSubtitle.textContent = `Has destruido toda la flota enemiga.`;
+        gameoverTitle.textContent = '¡Victoria Naval!';
+        gameoverTitle.className = 'debriefing-result-title title-victory';
+        gameoverSubtitle.textContent = `Has destruido toda la flota enemiga con honor.`;
       } else {
         window.soundFx.playDefeat();
-        gameoverTitle.textContent = 'Derrota';
-        gameoverTitle.className = 'title-defeat';
-        gameoverSubtitle.textContent = `Tu flota ha sido destruida por ${state.winnerName}.`;
+        gameoverTitle.textContent = 'Flota Neutralizada';
+        gameoverTitle.className = 'debriefing-result-title title-defeat';
+        gameoverSubtitle.textContent = `Tu escuadra ha sido destruida por ${state.winnerName}.`;
       }
 
       // Actualizar estadísticas permanentes del comandante
