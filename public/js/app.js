@@ -129,9 +129,29 @@ document.addEventListener('DOMContentLoaded', () => {
     modalJoin.classList.remove('hidden');
   }
 
-  // Actualizar icono de sonido
+  // Actualizar icono de sonido con SVG táctico
   function updateSoundIcon() {
-    btnSoundToggle.textContent = window.soundFx.isMuted ? '🔇' : '🔊';
+    if (!btnSoundToggle) return;
+    if (window.soundFx.isMuted) {
+      btnSoundToggle.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <line x1="23" y1="9" x2="17" y2="15"></line>
+          <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+      `;
+      btnSoundToggle.title = 'Sonido silenciado (clic para activar)';
+      btnSoundToggle.classList.add('is-muted');
+    } else {
+      btnSoundToggle.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      `;
+      btnSoundToggle.title = 'Sonido activo (clic para silenciar)';
+      btnSoundToggle.classList.remove('is-muted');
+    }
   }
   updateSoundIcon();
 
@@ -363,14 +383,47 @@ document.addEventListener('DOMContentLoaded', () => {
     function draw() {
       ctx.clearRect(0, 0, width, height);
 
+      // Cuadrícula cartográfica sutil con retículas
+      const gridSize = 64;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.025)';
+      ctx.lineWidth = 1;
+
+      for (let x = 0; x < width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+
+      for (let y = 0; y < height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      // Cruces técnicas milimétricas en intersecciones
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
+      const crossSize = 3;
+      for (let x = gridSize * 2; x < width; x += gridSize * 2) {
+        for (let y = gridSize * 2; y < height; y += gridSize * 2) {
+          ctx.beginPath();
+          ctx.moveTo(x - crossSize, y);
+          ctx.lineTo(x + crossSize, y);
+          ctx.moveTo(x, y - crossSize);
+          ctx.lineTo(x, y + crossSize);
+          ctx.stroke();
+        }
+      }
+
       const cx = width / 2;
       const cy = height / 2;
-      const maxRadius = Math.max(width, height) * 0.62;
+      const maxRadius = Math.max(width, height) * 0.55;
 
-      // Anillos del sonar
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
+      // Círculos de rango balístico sutiles
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.04)';
       ctx.lineWidth = 1;
-      const rings = 5;
+      const rings = 4;
       for (let i = 1; i <= rings; i++) {
         const r = (maxRadius / rings) * i;
         ctx.beginPath();
@@ -378,60 +431,60 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.stroke();
       }
 
-      // Cruz táctica
+      // Eje de navegación central tenue
       ctx.beginPath();
-      ctx.moveTo(cx - maxRadius, cy);
-      ctx.lineTo(cx + maxRadius, cy);
-      ctx.moveTo(cx, cy - maxRadius);
-      ctx.lineTo(cx, cy + maxRadius);
+      ctx.moveTo(cx - 40, cy);
+      ctx.lineTo(cx + 40, cy);
+      ctx.moveTo(cx, cy - 40);
+      ctx.lineTo(cx, cy + 40);
       ctx.stroke();
 
-      // Haz rotatorio
-      angle = (angle + 0.011) % (Math.PI * 2);
+      // Haz de barrido sutil
+      angle = (angle + 0.006) % (Math.PI * 2);
 
       const sweepGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxRadius);
-      sweepGradient.addColorStop(0, 'rgba(56, 189, 248, 0.16)');
+      sweepGradient.addColorStop(0, 'rgba(56, 189, 248, 0.06)');
       sweepGradient.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
 
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, maxRadius, angle - 0.28, angle);
+      ctx.arc(cx, cy, maxRadius, angle - 0.22, angle);
       ctx.closePath();
       ctx.fillStyle = sweepGradient;
       ctx.fill();
 
-      // Línea frontal
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
-      ctx.lineWidth = 1.5;
+      // Línea frontal nítida
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.18)';
+      ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(cx + Math.cos(angle) * maxRadius, cy + Math.sin(angle) * maxRadius);
       ctx.stroke();
       ctx.restore();
 
-      // Blips
+      // Marcadores de contacto balístico
       blips.forEach(b => {
         const bx = cx + Math.cos(b.angle) * (maxRadius * b.dist);
         const by = cy + Math.sin(b.angle) * (maxRadius * b.dist);
 
         const diff = Math.abs((angle - b.angle + Math.PI * 2) % (Math.PI * 2));
-        if (diff < 0.035) {
-          b.opacity = 1.0;
+        if (diff < 0.02) {
+          b.opacity = 0.9;
         }
 
         if (b.opacity > 0.01) {
-          ctx.fillStyle = `rgba(56, 189, 248, ${b.opacity * 0.75})`;
+          ctx.fillStyle = `rgba(56, 189, 248, ${b.opacity * 0.6})`;
           ctx.beginPath();
-          ctx.arc(bx, by, b.size, 0, Math.PI * 2);
+          ctx.arc(bx, by, 2.5, 0, Math.PI * 2);
           ctx.fill();
 
-          ctx.strokeStyle = `rgba(56, 189, 248, ${b.opacity * 0.4})`;
+          ctx.strokeStyle = `rgba(56, 189, 248, ${b.opacity * 0.25})`;
           ctx.beginPath();
-          ctx.arc(bx, by, b.size + (1 - b.opacity) * 16, 0, Math.PI * 2);
+          ctx.arc(bx, by, 3 + (1 - b.opacity) * 12, 0, Math.PI * 2);
           ctx.stroke();
 
-          b.opacity -= 0.007;
+          b.opacity -= 0.005;
         }
       });
 

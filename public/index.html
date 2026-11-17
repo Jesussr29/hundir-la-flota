@@ -3,353 +3,528 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Hundir la Flota Online - Multijugador</title>
-  <meta name="description" content="Juego clásico de Hundir la Flota multijugador online en tiempo real.">
-  <meta name="theme-color" content="#0f1117">
+  <title>Hundir la Flota — Centro Táctico Naval</title>
+  <meta name="description" content="Juego táctico multijugador online de combate naval en tiempo real.">
+  <meta name="theme-color" content="#080c14">
 
-  <!-- Fuente Minimalista: Inter -->
+  <!-- Tipografías de Alta Precisión: Plus Jakarta Sans + JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <!-- Fondo animado interactivo: Radar Sonar Táctico -->
+  <!-- Fondo Táctico de Trazado Cartográfico -->
   <canvas id="radar-canvas-bg" class="radar-bg"></canvas>
 
-  <!-- Barra de Navegación -->
+  <!-- Barra Superior de Navegación Técnica -->
   <header class="navbar">
     <div class="nav-brand">
-      <span class="brand-icon">⚓</span>
-      <span class="brand-title">Hundir la Flota</span>
-      <span class="brand-tag">TACTICAL NAVY</span>
+      <div class="brand-insignia">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="5" r="3"></circle>
+          <line x1="12" y1="22" x2="12" y2="8"></line>
+          <path d="M5 12H2a10 10 0 0 0 20 0h-3"></path>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">HUNDIR LA FLOTA</span>
+        <span class="brand-sub">TACTICAL FLEET COMMAND // V2.4</span>
+      </div>
     </div>
+
     <div class="nav-actions">
-      <button id="btn-sonar-ping" class="icon-btn sonar-btn" title="Emitir pulso acústico de sonar" aria-label="Sonar">
-        📡 Sonar
+      <!-- Pulso acústico de sonar -->
+      <button id="btn-sonar-ping" class="nav-control-btn" title="Emitir pulso acústico de sonar" aria-label="Sonar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 12h2a8 8 0 0 1 8-8v2"></path>
+          <path d="M4.93 4.93l1.41 1.41"></path>
+          <circle cx="12" cy="12" r="2"></circle>
+          <path d="M16.24 7.76a6 6 0 0 1 0 8.49m2.83-11.31a10 10 0 0 1 0 14.14"></path>
+        </svg>
+        <span class="nav-btn-label">Sonar</span>
       </button>
+
+      <!-- Indicador de conexión en tiempo real -->
       <div id="connection-status-pill" class="status-pill offline">
         <span class="status-dot"></span>
-        <span class="status-text">Conectando...</span>
+        <span class="status-text">Conectando</span>
       </div>
-      <button id="btn-sound-toggle" class="icon-btn" title="Activar/Silenciar sonido" aria-label="Sonido">🔊</button>
+
+      <!-- Control de Sonido -->
+      <button id="btn-sound-toggle" class="nav-icon-btn" title="Activar o silenciar audio" aria-label="Sonido">
+        <svg id="sound-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      </button>
     </div>
   </header>
 
-  <!-- Contenedor Principal -->
+  <!-- Contenedor Principal de Vistas -->
   <main class="app-container">
 
-    <!-- 1. PANTALLA PRINCIPAL / MENÚ DASHBOARD -->
+    <!-- ================================================================
+         1. PANTALLA PRINCIPAL / CENTRO DE OPERACIONES TÁCTICO
+         ================================================================ -->
     <section id="view-menu" class="view-section active">
-      <div class="menu-dashboard">
-
-        <!-- PANEL IZQUIERDO: DOSSIER DEL COMANDANTE -->
-        <div class="card commander-card">
-          <div class="card-classified-header">
-            <span class="stamp-classified">ALTO MANDO NAVAL</span>
-            <span class="id-code">DOC #842-NV</span>
-          </div>
-
-          <div class="commander-profile">
-            <div class="avatar-container">
-              <button id="btn-select-avatar" class="commander-avatar" title="Cambiar insignia naval" aria-label="Cambiar insignia">
-                <span id="commander-avatar-icon">⚓</span>
-                <span class="avatar-edit-hint">Cambiar</span>
-              </button>
+      
+      <!-- Fila Superior del Comandante: Identidad y Telemetría Militar -->
+      <div class="commander-strip">
+        <div class="commander-dossier-left">
+          <button id="btn-select-avatar" class="avatar-emblem-btn" title="Cambiar insignia naval" aria-label="Cambiar insignia">
+            <span id="commander-avatar-icon" class="emblem-glyph">⚓</span>
+            <span class="emblem-edit-badge">EDIT</span>
+          </button>
+          
+          <div class="commander-meta">
+            <div class="callsign-row">
+              <span class="callsign-label">INDICATIVO:</span>
+              <input type="text" id="input-player-name" class="callsign-input" placeholder="Comandante" maxlength="18">
             </div>
-            
-            <div class="commander-info">
-              <div class="input-group">
-                <label for="input-player-name">Nombre de Guerra</label>
-                <input type="text" id="input-player-name" class="minimal-input" placeholder="Ej: Almirante" maxlength="18">
-              </div>
+            <div class="rank-row">
+              <span class="rank-badge-tag">RANGO</span>
+              <span id="commander-rank-title" class="rank-title-text">Cadete Naval</span>
+              <span class="rank-divider">/</span>
+              <span id="commander-rank-exp" class="rank-exp-label">1 victoria para ascender</span>
             </div>
           </div>
+        </div>
 
-          <!-- Rango militar -->
-          <div class="rank-badge-box">
-            <div class="rank-header">
-              <span class="rank-label">RANGO ACTUAL</span>
-              <span id="commander-rank-title" class="rank-title">Cadete Naval</span>
-            </div>
-            <div class="rank-progress-bar">
+        <div class="commander-dossier-right">
+          <!-- Barra de progreso de carrera militar -->
+          <div class="rank-progress-wrapper">
+            <div class="rank-progress-track">
               <div id="commander-rank-fill" class="rank-progress-fill" style="width: 10%;"></div>
             </div>
-            <div id="commander-rank-exp" class="rank-exp-text">1 victoria para ascender</div>
           </div>
 
-          <!-- Estadísticas de Carrera -->
-          <div class="stats-grid">
-            <div class="stat-cell">
-              <span class="stat-num" id="stat-wins">0</span>
-              <span class="stat-desc">🏆 Victorias</span>
+          <!-- Cuadrícula de telemetría de combate -->
+          <div class="telemetry-grid">
+            <div class="telemetry-cell">
+              <span class="telemetry-value" id="stat-wins">0</span>
+              <span class="telemetry-label">Victorias</span>
             </div>
-            <div class="stat-cell">
-              <span class="stat-num" id="stat-matches">0</span>
-              <span class="stat-desc">⚔️ Batallas</span>
+            <div class="telemetry-cell">
+              <span class="telemetry-value" id="stat-matches">0</span>
+              <span class="telemetry-label">Batallas</span>
             </div>
-            <div class="stat-cell">
-              <span class="stat-num" id="stat-accuracy">0%</span>
-              <span class="stat-desc">🎯 Precisión</span>
+            <div class="telemetry-cell">
+              <span class="telemetry-value" id="stat-accuracy">0%</span>
+              <span class="telemetry-label">Precisión</span>
             </div>
-            <div class="stat-cell">
-              <span class="stat-num" id="stat-sunk">0</span>
-              <span class="stat-desc">💥 Hundidos</span>
+            <div class="telemetry-cell">
+              <span class="telemetry-value" id="stat-sunk">0</span>
+              <span class="telemetry-label">Hundidos</span>
             </div>
           </div>
 
-          <button id="btn-open-medals" class="btn-medals-card" title="Ver condecoraciones navales">
-            <div class="medals-btn-left">
-              <span class="medals-btn-icon">🏅</span>
-              <span class="medals-btn-title">Condecoraciones</span>
-            </div>
-            <span class="medals-btn-pill">
-              <span id="medals-count-unlocked">0</span> / 8
-            </span>
+          <!-- Botón de Condecoraciones -->
+          <button id="btn-open-medals" class="medals-pill-btn" title="Ver condecoraciones navales">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="medals-icon">
+              <circle cx="12" cy="8" r="7"></circle>
+              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+            </svg>
+            <span class="medals-text">Méritos: <strong id="medals-count-unlocked">0</strong>/8</span>
           </button>
         </div>
+      </div>
 
-        <!-- PANEL CENTRAL: CENTRO DE OPERACIONES Y MODOS DE JUEGO -->
-        <div class="card battle-ops-card">
-          <div class="menu-header">
-            <h1 class="menu-title">Centro de Operaciones</h1>
-            <p class="menu-subtitle">Elige tu modo de combate naval en tiempo real</p>
+      <!-- Cuadrícula Principal: Consola de Operaciones & Manifiesto Naval -->
+      <div class="war-room-grid">
+
+        <!-- Consola Central de Operaciones (60% ancho) -->
+        <div class="panel-terminal operations-panel">
+          <div class="panel-header">
+            <div class="panel-header-title">
+              <span class="panel-code">SEC-01</span>
+              <h2>CONSOLA DE DESPLIEGUE</h2>
+            </div>
+            <span class="panel-status-indicator">STANDBY // SELECCIONE MISIÓN</span>
           </div>
 
-          <!-- Selector de Modo de Juego -->
-          <div class="ops-modes-container">
-            
-            <!-- Modo 1: Multijugador Online -->
-            <div class="mode-box mode-multiplayer">
-              <div class="mode-box-header">
-                <div class="mode-icon">🌐</div>
-                <div class="mode-text">
-                  <h3>Multijugador Online (1 vs 1)</h3>
-                  <p>Enfréntate a un amigo en tiempo real compartiendo enlace o código</p>
-                </div>
+          <div class="missions-stack">
+            <!-- Misión 01: Multijugador en Tiempo Real -->
+            <div class="mission-module mission-pvp">
+              <div class="mission-briefing">
+                <div class="mission-tag">MODO PRIMARIO</div>
+                <h3>Combate Multijugador 1 vs 1</h3>
+                <p>Enfrentamiento naval en tiempo real entre dos comandantes desde cualquier dispositivo mediante sala cifrada.</p>
               </div>
-              <div class="mode-actions-row">
-                <button id="btn-create-room" class="btn btn-primary">
-                  <span>⚓</span> Crear sala privada
+
+              <div class="mission-actions">
+                <button id="btn-create-room" class="btn btn-primary btn-action-main">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  Crear sala privada
                 </button>
-                <button id="btn-join-modal" class="btn btn-secondary">
-                  <span>🔑</span> Unirse con código
+                <button id="btn-join-modal" class="btn btn-secondary btn-action-sub">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  Unirse con código
                 </button>
               </div>
             </div>
 
-            <div class="ops-divider">
-              <span>O BIEN</span>
+            <!-- Separador Estilizado -->
+            <div class="mission-divider">
+              <span class="divider-line"></span>
+              <span class="divider-label">O BIEN ENTRENAMIENTO</span>
+              <span class="divider-line"></span>
             </div>
 
-            <!-- Modo 2: Misión Solo vs IA Táctica -->
-            <div class="mode-box mode-bot">
-              <div class="mode-badge-ai">¡COMBATE INMEDIATO!</div>
-              <div class="mode-box-header">
-                <div class="mode-icon">🤖</div>
-                <div class="mode-text">
-                  <h3>Misión Solo: vs IA Naval</h3>
-                  <p>Entrena al instante contra algoritmos de búsqueda balística</p>
+            <!-- Misión 02: Simulación Balística vs IA -->
+            <div class="mission-module mission-ia">
+              <div class="mission-briefing">
+                <div class="mission-tag tag-sim">SIMULADOR AUTÓNOMO</div>
+                <h3>Maniobras Tácticas vs Algoritmo Naval</h3>
+                <p>Simulación de fuego balístico individual con tres calibraciones de agresividad táctica.</p>
+              </div>
+
+              <!-- Selector de Dificultad -->
+              <div class="diff-selector-container">
+                <div class="diff-options-row">
+                  <button class="btn-diff" data-diff="easy">
+                    <span class="diff-status-dot dot-easy"></span>
+                    <span class="diff-title">Recluta</span>
+                    <span class="diff-sub">Disparo disperso</span>
+                  </button>
+                  <button class="btn-diff active" data-diff="tactical">
+                    <span class="diff-status-dot dot-tactical"></span>
+                    <span class="diff-title">Táctico</span>
+                    <span class="diff-sub">Búsqueda en cruz</span>
+                  </button>
+                  <button class="btn-diff" data-diff="hard">
+                    <span class="diff-status-dot dot-hard"></span>
+                    <span class="diff-title">Némesis</span>
+                    <span class="diff-sub">Paridad matemática</span>
+                  </button>
+                </div>
+
+                <div class="diff-readout-box">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="readout-icon">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>
+                  <p id="diff-explanation" class="diff-explanation-text">
+                    <strong>Táctico:</strong> Ejecuta persecución perimétrica en cruz tras cada impacto hasta lograr el hundimiento.
+                  </p>
                 </div>
               </div>
 
-              <!-- Selector de dificultad -->
-              <div class="diff-selector-row">
-                <button class="btn-diff" data-diff="easy">
-                  <span class="diff-dot easy"></span>
-                  Recluta
-                </button>
-                <button class="btn-diff active" data-diff="tactical">
-                  <span class="diff-dot tactical"></span>
-                  Táctico
-                </button>
-                <button class="btn-diff" data-diff="hard">
-                  <span class="diff-dot hard"></span>
-                  Almirante Némesis
-                </button>
-              </div>
-              <p id="diff-explanation" class="diff-explanation-text">
-                🔵 <strong>Táctico:</strong> Utiliza el algoritmo de caza en cruz tras cada impacto y maniobras perimetrales.
-              </p>
-
-              <button id="btn-play-bot" class="btn btn-success btn-play-ai">
-                <span>⚔️</span> ¡Iniciar Batalla contra la IA!
+              <button id="btn-play-bot" class="btn btn-tactical-start">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                Iniciar Simulación de Combate
               </button>
             </div>
-
           </div>
         </div>
 
-        <!-- PANEL DERECHO: HANGAR NAVAL & GUÍA TÁCTICA -->
-        <div class="card hangar-card">
-          <div class="hangar-header">
-            <div class="hangar-title-row">
-              <h3>🚢 Hangar de la Flota</h3>
-              <span class="dock-count">5 Buques</span>
+        <!-- Panel Lateral: Manifiesto Naval de la Flota (40% ancho) -->
+        <div class="panel-terminal fleet-panel">
+          <div class="panel-header">
+            <div class="panel-header-title">
+              <span class="panel-code">SEC-02</span>
+              <h2>ESPECIFICACIONES DE FLOTA</h2>
             </div>
-            <p class="hangar-subtitle">Inspecciona las especificaciones de combate</p>
+            <span class="panel-metric-tag">5 UNIDADES</span>
           </div>
 
-          <!-- Selector de barco en el hangar -->
-          <div id="hangar-ships-tabs" class="hangar-tabs"></div>
+          <div class="hangar-wrapper">
+            <!-- Pestañas de Buques -->
+            <div id="hangar-ships-tabs" class="hangar-selector-tabs"></div>
 
-          <!-- Ficha técnica del barco seleccionado -->
-          <div id="hangar-ship-display" class="ship-display-box">
-            <!-- Renderizado dinámicamente con JS -->
+            <!-- Ficha Técnica del Buque Seleccionado -->
+            <div id="hangar-ship-display" class="blueprint-card"></div>
+
+            <!-- Acceso a Estrategia Naval -->
+            <button id="btn-open-tactical-guide" class="btn btn-outline-full">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              Manual de Doctrina Balística
+            </button>
           </div>
+        </div>
 
-          <button id="btn-open-tactical-guide" class="btn btn-secondary btn-sm" style="margin-top: 14px;">
-            📖 Manual de Estrategia Naval
+      </div>
+
+      <!-- Pie Técnico del Sistema -->
+      <footer class="app-footer">
+        <div class="footer-left">
+          <span class="footer-dot"></span>
+          <span>ESTADO DEL SERVIDOR: TRANSMISIÓN ACTIVA // SOCKET.IO OVER WSS</span>
+        </div>
+        <div class="footer-right">
+          <span>APACHE REVERSE PROXY // PROTOCOLO DE COMBATE SINCRONIZADO</span>
+        </div>
+      </footer>
+
+    </section>
+
+    <!-- ================================================================
+         2. PANTALLA DE SALA DE ESPERA (LOBBY BRIEFING)
+         ================================================================ -->
+    <section id="view-lobby" class="view-section">
+      <div class="lobby-terminal">
+        <div class="terminal-badge-bar">
+          <span class="terminal-tag">SALA DE OPERACIONES TÁCTICAS</span>
+          <span class="terminal-id">SESIÓN ACTIVA</span>
+        </div>
+
+        <div class="lobby-hero-block">
+          <h2 class="terminal-title">Enlace de Comunicación</h2>
+          <p class="terminal-desc">Facilita el código de acceso o el enlace directo al segundo comandante para iniciar el combate.</p>
+        </div>
+
+        <!-- Radar Táctico de Enlace -->
+        <div class="lobby-link-beacon">
+          <div class="beacon-ripple r-1"></div>
+          <div class="beacon-ripple r-2"></div>
+          <div class="beacon-ripple r-3"></div>
+          <div class="beacon-center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="beacon-svg">
+              <path d="M12 2v20M2 12h20"></path>
+              <circle cx="12" cy="12" r="8"></circle>
+            </svg>
+          </div>
+        </div>
+        <div class="lobby-status-readout">Rastreando señal del segundo oficial de mando...</div>
+
+        <!-- Código de Sala de Gran Tamaño -->
+        <div class="room-code-module">
+          <span class="code-kicker">CÓDIGO DE TRANSMISIÓN CIFRADA</span>
+          <div id="lobby-room-code" class="code-primary-display">------</div>
+        </div>
+
+        <!-- Fila de Acciones de Invitación -->
+        <div class="lobby-actions-row">
+          <button id="btn-copy-code" class="btn btn-secondary btn-icon-leading">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Copiar código
+          </button>
+          <button id="btn-copy-link" class="btn btn-secondary btn-icon-leading">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+            Copiar enlace
+          </button>
+          <button id="btn-share-whatsapp" class="btn btn-whatsapp-tactical">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="wa-icon">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+            </svg>
+            Invitar por WhatsApp
           </button>
         </div>
 
-      </div>
-    </section>
-
-    <!-- 2. PANTALLA DE SALA DE ESPERA (LOBBY) -->
-    <section id="view-lobby" class="view-section">
-      <div class="card lobby-card">
-        <div class="menu-header">
-          <h2 class="menu-title" style="font-size: 1.5rem;">Sala de espera</h2>
-          <p class="menu-subtitle">Comparte el código o el enlace con tu rival</p>
-        </div>
-
-        <!-- Radar animado de búsqueda de señal en el Lobby -->
-        <div class="lobby-radar-animation">
-          <div class="radar-pulse-ring r1"></div>
-          <div class="radar-pulse-ring r2"></div>
-          <div class="radar-pulse-ring r3"></div>
-          <div class="radar-pulse-center">📡</div>
-        </div>
-        <p class="lobby-scanner-status">Buscando señal de radio del segundo comandante...</p>
-
-        <div class="lobby-code-box">
-          <span class="code-label">Código de sala:</span>
-          <div id="lobby-room-code" class="code-display">CÓDIGO</div>
-        </div>
-
-        <div class="action-row">
-          <button id="btn-copy-code" class="btn btn-secondary">Copiar código</button>
-          <button id="btn-copy-link" class="btn btn-secondary">Copiar enlace</button>
-        </div>
-
-        <button id="btn-share-whatsapp" class="btn btn-whatsapp" style="margin-top: 10px;">
-          Invitar por WhatsApp
-        </button>
-
-        <div class="lobby-players-list">
-          <div class="player-row">
-            <span class="player-label">Jugador 1:</span>
-            <span id="lobby-p1-status" class="player-name">Esperando...</span>
+        <!-- Puestos de Mando de Jugadores -->
+        <div class="commanders-status-bay">
+          <div class="commander-station">
+            <span class="station-label">ESTACIÓN ALFA (LOCAL)</span>
+            <div id="lobby-p1-status" class="station-player">Esperando identificación...</div>
           </div>
-          <div class="player-row">
-            <span class="player-label">Jugador 2:</span>
-            <span id="lobby-p2-status" class="player-name status-waiting">Esperando rival...</span>
+          <div class="commander-station">
+            <span class="station-label">ESTACIÓN BRAVO (RIVAL)</span>
+            <div id="lobby-p2-status" class="station-player status-waiting">Enlace pendiente...</div>
           </div>
         </div>
 
-        <!-- Caja de consejo táctico rotativo -->
-        <div class="lobby-tip-card">
-          <span class="tip-icon">💡</span>
-          <span id="lobby-tip-text" class="tip-text">Consejo: Si disparas en patrón de ajedrez (paridad), localizarás barcos en la mitad de turnos.</span>
+        <!-- Consejo Táctico Operacional -->
+        <div class="tactical-intel-callout">
+          <div class="intel-badge">DOCTRINA BALÍSTICA</div>
+          <p id="lobby-tip-text" class="intel-text">La regla de paridad matemática asegura descubrir cualquier navío de al menos 2 casillas invirtiendo solo la mitad de salvas.</p>
         </div>
 
-        <button id="btn-leave-lobby" class="btn btn-danger">
-          Abandonar sala
+        <button id="btn-leave-lobby" class="btn btn-abort">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Abortar Sala y Volver
         </button>
       </div>
     </section>
 
-    <!-- 3. PANTALLA DE COLOCACIÓN DE BARCOS -->
+    <!-- ================================================================
+         3. PANTALLA DE COLOCACIÓN DE BARCOS (ASTILLERO TÁCTICO)
+         ================================================================ -->
     <section id="view-placement" class="view-section">
-      <div class="placement-layout">
-        <!-- Panel lateral: Barcos y acciones -->
-        <div class="placement-dock card">
-          <div class="dock-header">
-            <h3>Tus barcos</h3>
-            <span class="dock-count">5 unidades</span>
+      <div class="drydock-layout">
+        
+        <!-- Panel Izquierdo: Selección y Despliegue de Unidades -->
+        <div class="drydock-sidebar panel-terminal">
+          <div class="panel-header">
+            <div class="panel-header-title">
+              <span class="panel-code">DOCK-01</span>
+              <h2>ESCUADRA NAVAL</h2>
+            </div>
+            <span class="dock-count">5 UNIDADES</span>
           </div>
-          <p id="placement-status-text" class="placement-help">
-            Selecciona un barco y pulsa en la cuadrícula, o usa "Aleatorio".
+
+          <p id="placement-status-text" class="placement-instruction-text">
+            Selecciona un buque y marca su posición en la cuadrícula de atraque, o genera un despliegue aleatorio.
           </p>
 
-          <div id="ship-dock" class="ship-dock-list"></div>
+          <!-- Lista de Barcos en el Muelle -->
+          <div id="ship-dock" class="dock-units-list"></div>
 
-          <div class="placement-actions">
-            <button id="btn-rotate-ship" class="btn btn-secondary">
-              Girar orientación (Horizontal ↔)
+          <!-- Controles de Despliegue -->
+          <div class="placement-controls-cluster">
+            <button id="btn-rotate-ship" class="btn btn-orientation-toggle">
+              <span class="toggle-icon">↔</span>
+              <span class="toggle-text">Orientación: <strong>HORIZONTAL</strong></span>
             </button>
-            <div class="btn-row">
+
+            <div class="actions-split-row">
               <button id="btn-random-placement" class="btn btn-secondary">
-                🎲 Aleatorio
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <circle cx="8" cy="8" r="1.5" fill="currentColor"></circle>
+                  <circle cx="16" cy="16" r="1.5" fill="currentColor"></circle>
+                  <circle cx="12" cy="12" r="1.5" fill="currentColor"></circle>
+                </svg>
+                Aleatorio
               </button>
               <button id="btn-clear-placement" class="btn btn-ghost">
                 Limpiar
               </button>
             </div>
-            <button id="btn-ready-fight" class="btn btn-success" disabled>
-              ¡Listo para jugar!
+
+            <button id="btn-ready-fight" class="btn btn-confirm-deployment" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Confirmar Despliegue [Listo]
             </button>
           </div>
         </div>
 
-        <!-- Tablero de colocación -->
-        <div class="placement-grid-wrap card">
-          <div class="grid-card-title">Posiciona tus barcos</div>
-          <div id="placement-grid" class="battleship-grid"></div>
+        <!-- Panel Derecho: Tablero de Despliegue 10x10 -->
+        <div class="drydock-canvas panel-terminal">
+          <div class="panel-header">
+            <div class="panel-header-title">
+              <span class="panel-code">SECTOR PROPIO</span>
+              <h2>CUADRÍCULA DE DESPLIEGUE</h2>
+            </div>
+            <span class="coordinates-badge">COORDENADAS A-J // 01-10</span>
+          </div>
+
+          <div class="grid-viewport-box">
+            <div id="placement-grid" class="battleship-grid"></div>
+          </div>
         </div>
+
       </div>
     </section>
 
-    <!-- 4. PANTALLA DE BATALLA (AMBOS TABLEROS VISIBLES SIN SCROLL) -->
+    <!-- ================================================================
+         4. PANTALLA DE COMBATE (CIC - COMBAT INFORMATION CENTER)
+         ================================================================ -->
     <section id="view-battle" class="view-section">
-      <div class="battle-screen">
-        <!-- Banner de turno minimalista -->
-        <div id="battle-turn-banner" class="turn-banner opponent-turn">
-          ⏳ Conectando...
-        </div>
-
-        <!-- Contenedor con los dos tableros en la misma pantalla -->
-        <div class="battle-arena">
-          <!-- Tablero 1: Radar Rival (Donde disparas) -->
-          <div id="section-enemy-grid" class="board-card">
-            <div class="board-header">
-              <span class="board-title">Radar Rival</span>
-              <span class="board-badge badge-enemy">Zona de ataque</span>
-            </div>
-            <div id="enemy-grid" class="battleship-grid"></div>
-            <div id="enemy-fleet-tracker" class="fleet-tracker"></div>
-          </div>
-
-          <!-- Tablero 2: Mi Flota (Tus barcos) -->
-          <div id="section-player-grid" class="board-card">
-            <div class="board-header">
-              <span class="board-title">Mi Flota</span>
-              <span class="board-badge badge-ally">Defensa</span>
-            </div>
-            <div id="player-grid" class="battleship-grid"></div>
-            <div id="player-fleet-tracker" class="fleet-tracker"></div>
+      <div class="cic-battlefield">
+        
+        <!-- HUD Central de Turno y Estado de Fuego -->
+        <div id="battle-turn-banner" class="cic-turn-banner opponent-turn">
+          <div class="hud-status-indicator">
+            <span class="hud-pulse"></span>
+            <span class="hud-label-text">ENLACE TÁCTICO INICIALIZADO</span>
           </div>
         </div>
+
+        <!-- Arenas de Combate Lado a Lado (Sin Scroll Vertical) -->
+        <div class="cic-arena-split">
+          
+          <!-- Sector 1: Radar Hostil (Zona de Ataque) -->
+          <div id="section-enemy-grid" class="tactical-board-station enemy-station">
+            <div class="station-header">
+              <div class="station-meta">
+                <span class="station-sector-tag">SECTOR HOSTIL</span>
+                <h3 class="station-title">Radar de Superficie Rival</h3>
+              </div>
+              <span class="station-badge badge-attack">ZONA DE FUEGO</span>
+            </div>
+
+            <div class="board-frame">
+              <div id="enemy-grid" class="battleship-grid"></div>
+            </div>
+
+            <!-- Tracker de Flota Enemiga -->
+            <div class="fleet-tracker-wrap">
+              <div class="tracker-header">INTEGRIDAD DE LA ESCUADRA HOSTIL</div>
+              <div id="enemy-fleet-tracker" class="fleet-tracker"></div>
+            </div>
+          </div>
+
+          <!-- Sector 2: Estación Defensiva (Mi Flota) -->
+          <div id="section-player-grid" class="tactical-board-station friendly-station">
+            <div class="station-header">
+              <div class="station-meta">
+                <span class="station-sector-tag">SECTOR AMIGO</span>
+                <h3 class="station-title">Estado de Mi Flota</h3>
+              </div>
+              <span class="station-badge badge-defense">DEFENSA</span>
+            </div>
+
+            <div class="board-frame">
+              <div id="player-grid" class="battleship-grid"></div>
+            </div>
+
+            <!-- Tracker de Flota Propia -->
+            <div class="fleet-tracker-wrap">
+              <div class="tracker-header">INTEGRIDAD DE LA ESCUADRA ALIADA</div>
+              <div id="player-fleet-tracker" class="fleet-tracker"></div>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </section>
 
-    <!-- 5. PANTALLA DE FIN DE PARTIDA -->
+    <!-- ================================================================
+         5. PANTALLA DE FIN DE COMBATE (DEBRIEFING MILITAR)
+         ================================================================ -->
     <section id="view-gameover" class="view-section">
-      <div class="card gameover-card">
-        <h2 id="gameover-title" class="title-victory">¡Victoria!</h2>
-        <p id="gameover-subtitle" class="menu-subtitle">Has hundido todos los barcos del rival.</p>
+      <div class="debriefing-terminal">
+        <div class="terminal-badge-bar">
+          <span class="terminal-tag">INFORME BALÍSTICO DE MISIÓN</span>
+          <span class="terminal-id">SESIÓN FINALIZADA</span>
+        </div>
 
-        <div id="gameover-stats" class="gameover-stats"></div>
+        <h2 id="gameover-title" class="debriefing-result-title">Victoria Naval</h2>
+        <p id="gameover-subtitle" class="debriefing-result-sub">La escuadra rival ha sido completamente neutralizada en alta mar.</p>
 
-        <div class="action-column">
-          <button id="btn-request-rematch" class="btn btn-primary">
-            Jugar otra partida
+        <!-- Estadísticas de la partida -->
+        <div id="gameover-stats" class="debriefing-metrics-grid"></div>
+
+        <div class="debriefing-actions-row">
+          <button id="btn-request-rematch" class="btn btn-primary btn-action-main">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M1 4v6h6M23 20v-6h-6"></path>
+              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+            </svg>
+            Solicitar Revancha
           </button>
-          <button id="btn-back-to-menu" class="btn btn-secondary">
-            Volver al menú
+          <button id="btn-back-to-menu" class="btn btn-secondary btn-action-sub">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            Volver al Centro de Mando
           </button>
         </div>
       </div>
@@ -357,125 +532,163 @@
 
   </main>
 
-  <!-- Botón flotante de Chat en la esquina inferior derecha -->
-  <button id="btn-toggle-chat" class="chat-fab" title="Abrir chat" aria-label="Abrir chat">
-    <span class="chat-fab-icon">💬</span>
-    <span class="chat-fab-text">Chat</span>
+  <!-- ================================================================
+       CANAL DE COMUNICACIONES TÁCTICAS (CHAT FLOTANTE EN ESQUINA)
+       ================================================================ -->
+  <button id="btn-toggle-chat" class="chat-fab-terminal" title="Abrir comunicaciones" aria-label="Abrir comunicaciones">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="chat-fab-svg">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+    <span class="chat-fab-label">COMMS</span>
     <span id="chat-unread-badge" class="chat-unread-badge hidden">0</span>
   </button>
 
-  <!-- Modal / Ventana flotante de Chat en la esquina -->
-  <div id="chat-floating-modal" class="chat-modal-window hidden">
-    <div class="chat-modal-header">
-      <span class="chat-modal-title">Chat de la sala</span>
-      <button id="btn-close-chat" class="chat-modal-close" aria-label="Cerrar chat">✕</button>
+  <div id="chat-floating-modal" class="chat-dock-window hidden">
+    <div class="chat-dock-header">
+      <div class="chat-dock-title-box">
+        <span class="chat-status-led"></span>
+        <span class="chat-dock-title">CANAL DE RADIO // SALA</span>
+      </div>
+      <button id="btn-close-chat" class="chat-dock-close" aria-label="Cerrar canal de radio">✕</button>
     </div>
-    <div id="chat-messages" class="chat-messages"></div>
-    <div class="chat-input-row">
-      <input type="text" id="input-chat-message" placeholder="Escribe un mensaje..." maxlength="120">
-      <button id="btn-send-chat" class="btn btn-primary btn-chat-send">Enviar</button>
+    
+    <div id="chat-messages" class="chat-stream-box"></div>
+
+    <div class="chat-dock-footer">
+      <input type="text" id="input-chat-message" class="chat-terminal-input" placeholder="Transmitir mensaje táctico..." maxlength="120">
+      <button id="btn-send-chat" class="btn btn-send-comms" aria-label="Transmitir">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
     </div>
   </div>
 
-  <!-- Modal para Unirse con Código -->
+  <!-- ================================================================
+       MODALES TÁCTICOS
+       ================================================================ -->
+
+  <!-- Modal 1: Unirse con Código -->
   <div id="modal-join" class="modal-overlay hidden">
-    <div class="modal-dialog card">
-      <h3 class="modal-title">Unirse a partida</h3>
-      <p class="modal-subtitle">Introduce el código facilitado por tu rival</p>
-
-      <div class="input-group" style="margin-top: 14px;">
-        <label for="input-join-code">Código de sala:</label>
-        <input type="text" id="input-join-code" class="minimal-input code-input" placeholder="EJ: ALFA-482" maxlength="15">
+    <div class="modal-dialog-terminal">
+      <div class="modal-header-box">
+        <div>
+          <span class="modal-code-tag">ACCESO SEGURO</span>
+          <h3 class="modal-terminal-title">Unirse a Operación</h3>
+        </div>
+        <button id="btn-cancel-join" class="modal-close-btn" aria-label="Cerrar">✕</button>
       </div>
 
-      <div class="action-row" style="margin-top: 18px;">
-        <button id="btn-cancel-join" class="btn btn-ghost">Cancelar</button>
-        <button id="btn-confirm-join" class="btn btn-primary">Entrar a la sala</button>
+      <p class="modal-terminal-desc">Introduce la clave de 8 dígitos de la sala facilitada por el comandante anfitrión.</p>
+
+      <div class="input-terminal-group">
+        <label for="input-join-code">CLAVE DE SALA:</label>
+        <input type="text" id="input-join-code" class="input-code-display" placeholder="ALFA-000" maxlength="15" autocomplete="off" spellcheck="false">
+      </div>
+
+      <div class="modal-actions-bay">
+        <button id="btn-confirm-join" class="btn btn-primary btn-full-width">
+          Entrar a la Sala
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Modal de Condecoraciones y Medallas -->
+  <!-- Modal 2: Condecoraciones y Méritos Navales -->
   <div id="modal-medals" class="modal-overlay hidden">
-    <div class="modal-dialog card modal-wide">
-      <div class="modal-header-row">
+    <div class="modal-dialog-terminal modal-wide">
+      <div class="modal-header-box">
         <div>
-          <h3 class="modal-title">🏅 Condecoraciones Navales</h3>
-          <p class="modal-subtitle">Méritos militares y logros de combate en servicio</p>
+          <span class="modal-code-tag">DOSSIER MILITAR</span>
+          <h3 class="modal-terminal-title">Condecoraciones Navales</h3>
         </div>
-        <button id="btn-close-medals" class="chat-modal-close" aria-label="Cerrar">✕</button>
+        <button id="btn-close-medals" class="modal-close-btn" aria-label="Cerrar">✕</button>
       </div>
 
-      <div id="medals-grid-container" class="medals-grid"></div>
+      <p class="modal-terminal-desc">Registro oficial de condecoraciones y méritos balísticos obtenidos en servicio activo.</p>
 
-      <div style="margin-top: 20px; text-align: center;">
-        <button id="btn-done-medals" class="btn btn-secondary" style="max-width: 200px; margin: 0 auto;">Entendido</button>
+      <div id="medals-grid-container" class="medals-dossier-grid"></div>
+
+      <div class="modal-footer-bay">
+        <button id="btn-done-medals" class="btn btn-secondary" style="max-width: 180px; margin: 0 auto;">Cerrar Expediente</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal Selector de Insignia de Comandante -->
+  <!-- Modal 3: Selector de Insignia de Comandante -->
   <div id="modal-avatars" class="modal-overlay hidden">
-    <div class="modal-dialog card modal-medium">
-      <div class="modal-header-row">
+    <div class="modal-dialog-terminal modal-medium">
+      <div class="modal-header-box">
         <div>
-          <h3 class="modal-title">⚓ Insignia de Comandante</h3>
-          <p class="modal-subtitle">Elige el emblema táctico para tu flota</p>
+          <span class="modal-code-tag">DISTINTIVO NAVAL</span>
+          <h3 class="modal-terminal-title">Insignia de Mando</h3>
         </div>
-        <button id="btn-close-avatars" class="chat-modal-close" aria-label="Cerrar">✕</button>
+        <button id="btn-close-avatars" class="modal-close-btn" aria-label="Cerrar">✕</button>
       </div>
 
-      <div id="avatars-selection-grid" class="avatars-grid"></div>
+      <p class="modal-terminal-desc">Elige el emblema heráldico militar que identificará tu escuadra en el canal de combate.</p>
+
+      <div id="avatars-selection-grid" class="avatars-tactical-grid"></div>
     </div>
   </div>
 
-  <!-- Modal de Manual Táctico y Estrategias -->
+  <!-- Modal 4: Manual de Doctrina Balística -->
   <div id="modal-guide" class="modal-overlay hidden">
-    <div class="modal-dialog card modal-wide">
-      <div class="modal-header-row">
+    <div class="modal-dialog-terminal modal-wide">
+      <div class="modal-header-box">
         <div>
-          <h3 class="modal-title">📖 Manual de Estrategia Naval</h3>
-          <p class="modal-subtitle">Tácticas balísticas comprobadas para dominar el océano</p>
+          <span class="modal-code-tag">DOCTRINA NAVAL</span>
+          <h3 class="modal-terminal-title">Manual de Estrategia Balística</h3>
         </div>
-        <button id="btn-close-guide" class="chat-modal-close" aria-label="Cerrar">✕</button>
+        <button id="btn-close-guide" class="modal-close-btn" aria-label="Cerrar">✕</button>
       </div>
 
-      <div class="tactics-guide-content">
-        <div class="tactic-card">
-          <div class="tactic-badge">TÁCTICA 1</div>
-          <h4>♟️ La Regla de la Paridad (Tablero de Ajedrez)</h4>
+      <div class="tactics-dossier-stack">
+        <!-- Táctica 1 -->
+        <div class="tactic-article">
+          <div class="tactic-header-row">
+            <span class="tactic-num">DOCTRINA 01</span>
+            <h4>La Regla de la Paridad (Cuadrícula Alterna)</h4>
+          </div>
           <p>
-            El barco más pequeño de la flota (el Destructor) mide <strong>2 casillas</strong>. Si disparas únicamente en casillas alternas donde <em>(Fila + Columna)</em> es par, es matemáticamente imposible que un barco enemigo se esconda sin ser descubierto. ¡Reduces un 50% el número de tiros necesarios para localizar la flota!
+            El buque más pequeño de cualquier escuadra naval (el <em>Destructor</em>) ocupa exactamente <strong>2 casillas contiguas</strong>. Si disparas únicamente sobre casillas donde la suma de <code>(Fila + Columna)</code> sea par, es matemáticamente imposible que un buque enemigo permanezca oculto sin cruzar al menos una de tus salvas.
           </p>
-          <div class="tactic-visual parity-demo">
-            <span class="cell-demo hit">A1</span>
-            <span class="cell-demo">A2</span>
-            <span class="cell-demo hit">A3</span>
-            <span class="cell-demo">B1</span>
-            <span class="cell-demo hit">B2</span>
-            <span class="cell-demo">B3</span>
+          <div class="tactic-schematic">
+            <span class="schematic-cell hit">A1</span>
+            <span class="schematic-cell">A2</span>
+            <span class="schematic-cell hit">A3</span>
+            <span class="schematic-cell">B1</span>
+            <span class="schematic-cell hit">B2</span>
+            <span class="schematic-cell">B3</span>
           </div>
         </div>
 
-        <div class="tactic-card">
-          <div class="tactic-badge">TÁCTICA 2</div>
-          <h4>🎯 El Algoritmo de Caza en Cruz</h4>
+        <!-- Táctica 2 -->
+        <div class="tactic-article">
+          <div class="tactic-header-row">
+            <span class="tactic-num">DOCTRINA 02</span>
+            <h4>Algoritmo de Intercepción en Cruz</h4>
+          </div>
           <p>
-            En cuanto logres un <strong>¡TOCADO!</strong>, no dispares al azar. Prueba sistemáticamente las 4 posiciones adyacentes: <strong>Norte, Sur, Este y Oeste</strong>. Al encontrar el segundo impacto habrás descubierto la orientación (horizontal o vertical); continúa esa línea hasta oír <strong>¡HUNDIDO!</strong>
+            Al confirmar un impacto positivo (<strong>¡TOCADO!</strong>), cesa el fuego aleatorio inmediatamente. Comprueba las cuatro coordenadas cardinales adyacentes: <strong>Norte, Sur, Este y Oeste</strong>. Al registrar el segundo impacto habrás determinado el vector de orientación (horizontal o vertical). Prosigue esa línea hasta la confirmación de hundimiento.
           </p>
         </div>
 
-        <div class="tactic-card">
-          <div class="tactic-badge">TÁCTICA 3</div>
-          <h4>🛡️ Camuflaje Perimétrico y Dispersión</h4>
+        <!-- Táctica 3 -->
+        <div class="tactic-article">
+          <div class="tactic-header-row">
+            <span class="tactic-num">DOCTRINA 03</span>
+            <h4>Dispersión y Camuflaje Perimétrico</h4>
+          </div>
           <p>
-            Muchos capitanes concentran su fuego en el centro del tablero. Colocar al menos 2 barcos en los <strong>bordes exteriores (Filas 1 y 10, Columnas A y J)</strong> aumentará drásticamente la supervivencia de tu flota. Deja siempre al menos una casilla vacía entre buques para no dar pistas.
+            La inmensa mayoría de capitanes concentran sus salvas iniciales en el sector central (filas 4 a 7). Posicionar unidades clave en los <strong>flancos extremos del tablero (Filas 1 y 10, Columnas A y J)</strong> aumenta drásticamente su probabilidad de supervivencia. Separa los buques por al menos una casilla vacía para no revelar posiciones contiguas.
           </p>
         </div>
       </div>
 
-      <div style="margin-top: 20px; text-align: center;">
-        <button id="btn-done-guide" class="btn btn-primary" style="max-width: 220px; margin: 0 auto;">¡A la batalla!</button>
+      <div class="modal-footer-bay">
+        <button id="btn-done-guide" class="btn btn-primary" style="max-width: 200px; margin: 0 auto;">Entendido, Capitán</button>
       </div>
     </div>
   </div>
@@ -483,7 +696,7 @@
   <!-- Contenedor de Alertas Toast Flotantes -->
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- Scripts -->
+  <!-- Scripts del Núcleo -->
   <script src="socket.io/socket.io.js"></script>
   <script src="js/sound.js"></script>
   <script src="js/board-ui.js"></script>
